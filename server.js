@@ -35,6 +35,8 @@ const L = require(__dirname + "/assets/modules/linkcheck.js")
 const S = require(__dirname + "/assets/modules/shorten.js")
 /* Steam integration */
 const Steam = require(__dirname + "/assets/modules/steam.js")
+/* RCon game server lookup */
+const Rcon = require(__dirname + "/assets/modules/Rcon.js")
 /* Looks up phrase on urban dictionary  */
 const U = require(__dirname + "/assets/modules/urban.js")
 /* Looks up phrase on wikipedia  */
@@ -76,6 +78,9 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "server":
+				Rcon.get(message,cmd.replace("server","").trim())
+			break
 			case "steam":
 				if (commands.length == 1) {
 					Steam.get(true,message,"Not supported")
@@ -184,5 +189,5 @@ app.get('/', function (req, res) {
 })
 
 app.listen(Settings.port, function () {
-  console.log('app listening on Settings.port '+ Settings.port)
+  console.log(Settings.bot.name + ' running on port '+ Settings.port)
 })

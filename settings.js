@@ -1,5 +1,6 @@
 module.exports = {
 	bot : {
+		name: "PlusOneBot",
 		playing:"PlusOne"
 	},
 	commandSymbol: "!",
