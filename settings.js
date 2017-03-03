@@ -1,7 +1,7 @@
 module.exports = {
 	bot : {
 		name: "PlusOneBot",
-		playing:"PlusOne"
+		playing:"PlusOne <3"
 	},
 	commandSymbol: "!",
 	port:6543,
