@@ -5,6 +5,12 @@ ehthumbs.db
 # Node modules for node.js
 node_modules/
 
+# Floobit
+.floo
+.flooignore
+.gitignore
+.gitattributes
+
 # Folder config file
 Desktop.ini
 
