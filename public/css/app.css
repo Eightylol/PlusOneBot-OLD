@@ -4,7 +4,7 @@
 .header {
   background: #1e2124!important;
   border-bottom:1px solid #222!important;
-  max-height: 50px;
+  max-height: 55px;
 }
 
 .logo {
@@ -25,6 +25,7 @@
 #sidebar {
   background:#1e2124!important;
 }
+
 
 #sidebar > ul > li a {
   height:40px;
@@ -55,16 +56,18 @@
   font-weight: normal!important;
   text-decoration: none;
   outline: none;
-  line-height: 26px;
+  line-height: 24px;
 }
 
-/*
-Template Name: DASHGUM FREE - Bootstrap 3.2 Admin Theme
-Template Version: 1.0
-Author: Carlos Alvarez
-Website: http://blacktie.co
-Premium: http://www.gridgum.com
-*/
+.dropdown > button {
+  background:transparent!important;
+  border:0!important;
+  position: relative;
+  padding: 10px 15px;
+}
+
+
+
 
 /* BASIC THEME CONFIGURATION */
 body {
@@ -83,15 +86,6 @@ ul li {
 a, a:hover, a:focus {
     text-decoration: none;
     outline: none;
-}
-::selection {
-
-    background: #68dff0;
-    color: #fff;
-}
-::-moz-selection {
-    background: #68dff0;
-    color: #fff;
 }
 
 #container {
@@ -475,6 +469,7 @@ ul.sidebar-menu li a.active i {
 /*notification*/
 #top_menu .nav > li, ul.top-menu > li {
     float: left;
+    padding: 5px;
 }
 
 .notify-row {
@@ -1412,13 +1407,13 @@ PANELS CONFIGURATIONS
 }
 
 /* Calendar Configuration */
-#calendar {
+/*#calendar {
   color: white;
   padding: 0px !important;
 }
 .calendar-month-header {
   background: #43b1a9;
-}
+}*/
 
 /* TODO PANEL */
 .steps{
@@ -1649,13 +1644,13 @@ PANELS CONFIGURATIONS
 
 
 /* Calendar Events - Calendar.html*/
-.external-event {
+/*.external-event {
   cursor: move;
   display: inline-block !important;
   margin-bottom: 7px !important;
   margin-right: 7px !important;
   padding: 10px;
-}
+}*/
 
 .drop-after {
   padding-top: 15px;
