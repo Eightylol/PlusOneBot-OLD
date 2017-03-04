@@ -3,7 +3,26 @@ const Settings = require(require('path').dirname(require.main.filename) + "\\set
 const app = new SteamApi.App(Settings.steam.apikey)
 const appNews = new SteamApi.News(Settings.steam.apikey)
 const toMarkdown = require('to-markdown')
+const q = require('q')
 let appList;
+
+appNews.GetTop20 = (appId, count, maxLength) => {
+	let deferred = q.defer(),
+			args,
+			client
+
+	if (!count) {
+		count = 5
+	}
+
+	this.setMethod( "GetNewsForApp" );
+	this.setVersion(2);
+
+	args = {
+		appid: appId,
+		count: count
+	}
+}
 
 app.GetAppList().done(function(result){
 	appList = result
@@ -94,7 +113,7 @@ const ParseParams = (message,search) => {
 			InitGameInfo(message,search)
 			return
 	} else if(q == "top") {
-		console.log("top")
+		appNews.GetTop20(123,2,10);
 	}
 }
 
