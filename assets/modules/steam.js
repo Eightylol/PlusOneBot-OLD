@@ -1,7 +1,8 @@
 const SteamApi = require('steam-api')
-const app = new SteamApi.App('729B074D90A891022A35C2C45D9CA03B');
-const appNews = new SteamApi.News('729B074D90A891022A35C2C45D9CA03B');
-
+const Settings = require(require('path').dirname(require.main.filename) + "\\settings.js")
+const app = new SteamApi.App(Settings.steam.apikey)
+const appNews = new SteamApi.News(Settings.steam.apikey)
+const toMarkdown = require('to-markdown')
 let appList;
 
 app.GetAppList().done(function(result){
@@ -11,16 +12,57 @@ app.GetAppList().done(function(result){
 
 const OutputGameInfo = (message,appId) => {
 	app.appDetails(appId).done(function(g){
+		// console.log(g)
 		appNews.GetNewsForApp(
 			appId,
-			optionalCount = 10,
+			optionalCount = 3,
 			optionalMaxLength = 10
 		).done(function(gNews){
-			var gDesc = g.description.replace(/(<([^>]+)>)/ig,"").substring(0, 500) + "...\n\n"
-			for (var i = 0; i < gNews.newsitems.length; i++) {
-				let newsItem = gNews.newsitems[i]
-				gDesc += "**"+newsItem.title+"** "+newsItem.url+"\n"
+			let description = toMarkdown(g.description).substring(0,650)
+
+			var gDesc = "";
+
+			gDesc += 	".\n\n__**"+g.name+"**__\n"
+			// if (typeof g.metacritics != "undefined") {
+
+			if (typeof g.metacritic != "undefined" && g.metacritic.score && g.metacritic.url) {
+				gDesc +=	"Metacritics: "
+				let metacritics = []
+				for (var i = 0; i < g.metacritic.length; i++) {
+					let metacritic = g.metacritic[i]
+					metacritics.push("**" + metacritic.score + "** <" + metacritic.url + ">")
+				}
+				gDesc += " **" + metacritics.join("** **") + "** \n"
 			}
+
+			if (typeof g.price != "undefined" && g.price.currency && g.price.initial && g.price.final) {
+				let price = g.price.final+" ".trim()
+				price = price.substring(0,price.length-2)+".00"
+				gDesc +=	"Price: " + price+ " " + g.price.currency.toLowerCase() + "\n"
+			}
+
+			if (typeof g.categories != "undefined" && g.categories.length > 0) {
+				gDesc += "Categories: "
+				let categories = []
+				for (var i = 0; i < g.categories.length; i++) {
+					let category = g.categories[i]
+					categories.push(category.description)
+				}
+				gDesc += " **" + categories.join("** **") + "** \n"
+
+			}
+
+			if (typeof g.genres != "undefined" && g.genres.length > 0) {
+				gDesc += "Genres: "
+				let genres = []
+				for (var i = 0; i < g.genres.length; i++) {
+					let genre = g.genres[i]
+					genres.push(genre.description)
+				}
+				gDesc += " **" + genres.join("** **") + "** \n"
+			}
+			console.log(g)
+			gDesc += g.header + "\n"
 			message.channel.sendMessage(gDesc);
 		});
 	});

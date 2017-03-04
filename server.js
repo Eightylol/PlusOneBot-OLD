@@ -78,6 +78,10 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "test":
+			break;
+				console.log("test")
+			break
 			case "server":
 				Rcon.get(message,cmd.replace("server","").trim())
 			break
@@ -165,6 +169,7 @@ bot.on("ready", () => {
 })
 
 bot.on('message', (message) => {
+
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
     let msg = message.toString()

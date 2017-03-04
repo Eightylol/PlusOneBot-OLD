@@ -1,0 +1,15 @@
+{
+    "recent_workspaces": [
+        {
+            "url": "https://floobits.com/danbannan/discordApp"
+        }
+    ],
+    "workspaces": {
+        "danbannan": {
+            "discordApp": {
+                "path": "D:\\NodeProjects\\PlusOneBot",
+                "url": "https://floobits.com/danbannan/discordApp"
+            }
+        }
+    }
+}
