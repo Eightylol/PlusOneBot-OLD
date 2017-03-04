@@ -8,10 +8,10 @@
     <meta name="author" content="">
     <title>PlusOneBot</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="public/css/app.css">
-    <link rel="stylesheet" href="public/css/app-responsive.css">
-    <link rel="stylesheet" href="public/css/lineicons.css">
-    <link rel="stylesheet" href="public/css/font-awesome.css">
+    <link rel="stylesheet" href="../public/css/app.css">
+    <link rel="stylesheet" href="../public/css/app-responsive.css">
+    <link rel="stylesheet" href="../public/css/lineicons.css">
+    <link rel="stylesheet" href="../public/css/font-awesome.css">
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -22,11 +22,11 @@
     integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="/public/js/Chart.js"></script>
-    <script src="/public/js/jquery.nicescroll.js"></script>
-    <script src="/public/js/jquery.scrollTo.min.js"></script>
-    <script src="/public/js/common-scripts.js"></script>
-    <script src="/public/js/app.js"></script>
+    <script src="../public/js/Chart.js"></script>
+    <script src="../public/js/jquery.nicescroll.js"></script>
+    <script src="../public/js/jquery.scrollTo.min.js"></script>
+    <script src="../public/js/common-scripts.js"></script>
+    <script src="../public/js/app.js"></script>
   </head>
   <body style="background:#36393e;">
 
@@ -45,8 +45,9 @@
             </div>
             <div class="top-menu">
             	<ul class="nav pull-right top-menu">
-                    <li><a class="logout" href="#" id="btn_servers">Servers</a></li>
-                    <li><a class="logout" href="#" id="btn_sign_out">Sign out</a></li>
+                <li><a class="logout" href="#">pressme</a></li>
+                <li><a class="logout" href="#" id="btn_servers">Servers</a></li>
+                <li><a class="logout" href="#" id="btn_sign_out">Sign out</a></li>
             	</ul>
             </div>
 
@@ -63,7 +64,7 @@
               <ul class="sidebar-menu" id="nav-accordion">
                   <p class="centered">
                     <a href="#">
-                      <img src="assets/img/plusone_logo.png" class="img-circle" width="60">
+                      <img src="../assets/img/plusone_logo.png" class="img-circle" width="60">
                     </a>
                   </p>
                   <h5 class="centered">PlusOne</h5>
@@ -170,7 +171,7 @@
                         color : "#fdfdfd"
                       }
                     ];
-                    var myDoughnut = new Chart(document.getElementById("serverstatus01").getContext("2d")).Doughnut(doughnutData);
+                  var myDoughnut = new Chart(document.getElementById("serverstatus01").getContext("2d")).Doughnut(doughnutData);
                 </script>
                           </div><!-- --/grey-panel ---->
                         </div><!-- /col-md-4-->
@@ -188,7 +189,7 @@
                   <div class="col-sm-6 col-xs-6"></div>
                             </div>
                             <div class="centered">
-                    <img src="assets/img/product.png" width="120">
+                    <img src="../assets/img/product.png" width="120">
                             </div>
                           </div>
                         </div><!-- /col-md-4 -->
@@ -199,7 +200,7 @@
                 <div class="white-header">
                   <h5>TOP USER</h5>
                 </div>
-                <p><img src="assets/img/ui-zac.jpg" class="img-circle" width="80"></p>
+                <p><img src="../assets/img/ui-zac.jpg" class="img-circle" width="80"></p>
                 <p><b>Zac Snider</b></p>
                 <div class="row">
                   <div class="col-md-6">
@@ -396,7 +397,7 @@
                       <!-- First Member -->
                       <div class="desc">
                         <div class="thumb">
-                          <img class="img-circle" src="assets/img/ui-divya.jpg" width="35px" height="35px" align="">
+                          <img class="img-circle" src="../assets/img/ui-divya.jpg" width="35px" height="35px" align="">
                         </div>
                         <div class="details">
                           <p><a href="#">DIVYA MANIAN</a><br>
@@ -407,7 +408,7 @@
                       <!-- Second Member -->
                       <div class="desc">
                         <div class="thumb">
-                          <img class="img-circle" src="assets/img/ui-sherman.jpg" width="35px" height="35px" align="">
+                          <img class="img-circle" src="../assets/img/ui-sherman.jpg" width="35px" height="35px" align="">
                         </div>
                         <div class="details">
                           <p><a href="#">DJ SHERMAN</a><br>
@@ -418,7 +419,7 @@
                       <!-- Third Member -->
                       <div class="desc">
                         <div class="thumb">
-                          <img class="img-circle" src="assets/img/ui-danro.jpg" width="35px" height="35px" align="">
+                          <img class="img-circle" src="../assets/img/ui-danro.jpg" width="35px" height="35px" align="">
                         </div>
                         <div class="details">
                           <p><a href="#">DAN ROGERS</a><br>
@@ -429,7 +430,7 @@
                       <!-- Fourth Member -->
                       <div class="desc">
                         <div class="thumb">
-                          <img class="img-circle" src="assets/img/ui-zac.jpg" width="35px" height="35px" align="">
+                          <img class="img-circle" src="../assets/img/ui-zac.jpg" width="35px" height="35px" align="">
                         </div>
                         <div class="details">
                           <p><a href="#">Zac Sniders</a><br>
@@ -440,7 +441,7 @@
                       <!-- Fifth Member -->
                       <div class="desc">
                         <div class="thumb">
-                          <img class="img-circle" src="assets/img/ui-sam.jpg" width="35px" height="35px" align="">
+                          <img class="img-circle" src="../assets/img/ui-sam.jpg" width="35px" height="35px" align="">
                         </div>
                         <div class="details">
                           <p><a href="#">Marcel Newman</a><br>
