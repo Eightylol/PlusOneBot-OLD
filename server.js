@@ -69,16 +69,6 @@ const timeStampToHumanReadable = (diff) => {
 	return "The bot has been online for {0} hours, {1} minutes and {2} seconds".format(hours,minutes,seconds);
 }
 
-const DeleteMessages = (message,num,at) => {
-	if (num > at) {
-		let lastMessageID = message.channel.lastMessageID || null
-		if (lastMessageID != null) {
-			console.log(lastMessageID)
-			DeleteMessages(message,num,at++)
-		}
-	}
-}
-
 const runCommand = (cmd,message) => {
   let commands = cmd.split(" "),
       command = commands[0]
@@ -88,12 +78,6 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
-			case "test":
-			let num = parseInt(cmd.replace("test","")) || 0
-			if (num != 0 && num < 1000) {
-				DeleteMessages(message,num,0)
-			}
-			break
 			case "server":
 				Rcon.get(message,cmd.replace("server","").trim())
 			break
@@ -106,7 +90,8 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					message.channel.sendMessage(avatar)
+					message.channel.sendFile(avatar)
+					message.delete()
 				})
 			break
 			case "playing":
