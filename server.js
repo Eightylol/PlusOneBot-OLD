@@ -106,7 +106,8 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					message.channel.sendMessage(avatar)
+					message.channel.sendFile(avatar)
+					message.delete()
 				})
 			break
 			case "playing":
