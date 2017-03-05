@@ -6,24 +6,6 @@ const toMarkdown = require('to-markdown')
 const q = require('q')
 let appList;
 
-appNews.GetTop20 = (appId, count, maxLength) => {
-	let deferred = q.defer(),
-			args,
-			client
-
-	if (!count) {
-		count = 5
-	}
-
-	this.setMethod( "GetNewsForApp" );
-	this.setVersion(2);
-
-	args = {
-		appid: appId,
-		count: count
-	}
-}
-
 app.GetAppList().done(function(result){
 	appList = result
 	console.log("Steam: app list updated... ("+appList.length+" titles)")
@@ -80,9 +62,8 @@ const OutputGameInfo = (message,appId) => {
 				}
 				gDesc += " **" + genres.join("** **") + "** \n"
 			}
-			console.log(g)
 			gDesc += g.header + "\n"
-			message.channel.sendMessage(gDesc);
+			message.channel.send(gDesc);
 		});
 	});
 }
@@ -113,7 +94,7 @@ const ParseParams = (message,search) => {
 			InitGameInfo(message,search)
 			return
 	} else if(q == "top") {
-		appNews.GetTop20(123,2,10);
+		message.channel.sendMessage("Top not implemented yet.");
 	}
 }
 
