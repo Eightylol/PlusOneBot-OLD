@@ -62,9 +62,8 @@ const OutputGameInfo = (message,appId) => {
 				}
 				gDesc += " **" + genres.join("** **") + "** \n"
 			}
-			console.log(g)
 			gDesc += g.header + "\n"
-			message.channel.sendMessage(gDesc);
+			message.channel.send(gDesc);
 		});
 	});
 }
