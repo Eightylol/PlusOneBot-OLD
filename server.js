@@ -79,10 +79,6 @@ const DeleteMessages = (message,num,at) => {
 	}
 }
 
-const fs = require('fs'),
-			path = require('path')
-
-
 const runCommand = (cmd,message) => {
   let commands = cmd.split(" "),
       command = commands[0]
@@ -92,6 +88,12 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "test":
+			let num = parseInt(cmd.replace("test","")) || 0
+			if (num != 0 && num < 1000) {
+				DeleteMessages(message,num,0)
+			}
+			break
 			case "server":
 				Rcon.get(message,cmd.replace("server","").trim())
 			break
@@ -104,13 +106,11 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					message.channel.sendFile(avatar)
-					message.delete()
+					message.channel.sendMessage(avatar)
 				})
 			break
 			case "playing":
-				bot.user.setGame(cmd.replace("playing",""));
-				message.delete()
+				bot.user.setGame(cmd.replace("playing ",""));
 			break
 			case "ping":
         message.channel.sendMessage("pong")
@@ -163,7 +163,6 @@ const runCommand = (cmd,message) => {
         S.shorten(ony,commands[1], (err,url) => {
           if (!err) {
             message.channel.sendMessage(url)
-						message.delete()
           } else {
             message.channel.sendMessage("Shortening error")
           }
