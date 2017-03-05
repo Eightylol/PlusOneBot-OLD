@@ -92,45 +92,6 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
-			case "neger":
-			var exec = require('child_process').exec;
-				let files = [
-					"neger1.png",
-					"neger2.jpg",
-					"neger3.jpg",
-					"neger4.jpg",
-					"neger5.jpg",
-					"neger6.jpg",
-					"neger7.jpg",
-					"neger8.jpg"
-				]
-				let file = files[Math.floor(Math.random() * files.length)]
-				let filePath = path.join(__dirname, '\\assets\\img\\' + file);
-				console.log(filePath)
-				let _cmd = [
-				    'composite',
-				    '-dissolve', '35%',
-				    '-gravity', 'SouthEast',
-				    '-quality', 100,
-				    path.join(__dirname, '\\assets\\img\\plusone_logo.png'),
-				    filePath,
-				    path.join(__dirname, '\\assets\\img\\resultOfCompositeDoNotDelete.jpg')
-				];
-				// message.channel.sendFile(filePath)
-				exec(_cmd.join(' '), function(err, stdout, stderr) {
-					if(err != null) {
-						console.log(stderr)
-						message.channel.sendFile(filePath)
-						return
-					}
-					message.channel.sendFile(__dirname + '\\assets\\img\\resultOfCompositeDoNotDelete.jpg')
-				    // Do stuff with result here
-				});
-				message.delete()
-				return
-				fs.readFile(filePath, (err,data) => {
-				})
-			break
 			case "server":
 				Rcon.get(message,cmd.replace("server","").trim())
 			break
@@ -143,7 +104,6 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					// console.log(avatar)
 					message.channel.sendFile(avatar)
 					message.delete()
 				})
