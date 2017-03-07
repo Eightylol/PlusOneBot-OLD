@@ -259,7 +259,7 @@ const InsertIntoDatabase = row => {
 }
 
 function fetchMessages(cb) {
-	db.all("SELECT * FROM messages", function(err, data) {
+	db.all("SELECT * FROM messages ORDER BY id DESC", function(err, data) {
 		cb(data)
 		return
   })
@@ -270,7 +270,7 @@ const logMessage = message => {
 	.then(user => {
 		let msg = {
 			id: message.id,
-			author: user.id + "|||" + user.username,
+			author: user.id + "|||" + user.username + "|||" + user.avatar,
 			type: message.type,
 			content: message.content,
 			channel: message.channel.name,
@@ -308,6 +308,11 @@ app.get('/', function (req, res) {
 
 app.post('/messages', function(req, res) {
 	fetchMessages((messages) => {
+		messages.forEach(message => {
+			let avatarData = message.author.split("|||") // [0] => userId [1] => userName [2] => [avatarId]
+			message.username = avatarData[1]
+			message.avatar = typeof avatarData[2] != "undefined" ? "https://cdn.discordapp.com/avatars/" + avatarData[0] + "/" + avatarData[2] + ".jpg" : null
+		})
 		res.setHeader('Content-Type', 'application/json')
 		res.send(messages)
 	})
