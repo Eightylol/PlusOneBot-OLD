@@ -1,11 +1,11 @@
 module.exports = {
 	bot : {
-		name: "PlusOneBot",
-		playing:"PlusOne <3",
+		name: "BOTNAME",
+		playing:"FRESH",
 		musicChannel: "Music",
 	},
 	steam: {
-		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
+		apikey: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' // INSERT API KEY HERE
 	},
 	commandSymbol: "!",
 	port:6543,
