@@ -228,12 +228,12 @@ const runCommand = (cmd,message) => {
 /* bot logic */
 
 const CheckTable = () => {
-    db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER,author TEXT, type TEXT, content TEXT, channel TEXT, createdAt INTEGER)", err => {
-			if (err != null) {
-				console.log(err)
-				return
-			}
-		});
+  db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER,author TEXT, type TEXT, content TEXT, channel TEXT, createdAt INTEGER)", err => {
+		if (err != null) {
+			console.log(err)
+			return
+		}
+	});
 }
 
 bot.on("ready", () => {
@@ -256,6 +256,13 @@ const InsertIntoDatabase = row => {
 	let stmt = db.prepare("INSERT INTO messages VALUES (?,?,?,?,?,?)")
 	stmt.run(row.id,row.author,row.type,row.content,row.channel,row.createdAt)
 	stmt.finalize()
+}
+
+function fetchMessages(cb) {
+	db.all("SELECT * FROM messages", function(err, data) {
+		cb(data)
+		return
+  })
 }
 
 const logMessage = message => {
@@ -300,7 +307,10 @@ app.get('/', function (req, res) {
 })
 
 app.post('/messages', function(req, res) {
-	res.send('not implemented')
+	fetchMessages((messages) => {
+		res.setHeader('Content-Type', 'application/json')
+		res.send(messages)
+	})
 })
 
 app.listen(Settings.port, function () {
