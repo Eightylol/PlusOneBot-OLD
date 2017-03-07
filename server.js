@@ -229,7 +229,6 @@ bot.on("ready", () => {
 })
 
 bot.on('message', message => {
-
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
     let msg = message.toString()
@@ -241,6 +240,10 @@ bot.on('message', message => {
 })
 
 bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+setInterval(() => {
+	bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+	console.log("Bot restarted")
+},1000 * 60 * 30)
 
 /* app logic */
 
