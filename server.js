@@ -237,7 +237,12 @@ bot.on("ready", () => {
 	})
 })
 
+const logMessage = message => {
+	console.log("initLogMessage")
+}
+
 bot.on('message', message => {
+	logMessage(message)
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
     let msg = message.toString()
@@ -247,7 +252,6 @@ bot.on('message', message => {
     }
   }
 })
-
 bot.login(Settings.bot.token)
 setInterval(() => {
 	bot.login(Settings.bot.token)
