@@ -14,11 +14,14 @@ const fs = require('fs'),
  			http = require('follow-redirects').http,
 			https = require('follow-redirects').https,
 			Promise = require('bluebird'),
-			mp3Duration = require('mp3-duration')
+			mp3Duration = require('mp3-duration'),
+			sqlite3 = require('sqlite3').verbose()
 
 /* install inits */
 const	app = express(),
 			bot = new Discord.Client()
+
+let db
 
 /* global variables */
 let validChannels = Settings.validChannels
@@ -224,7 +227,17 @@ const runCommand = (cmd,message) => {
 
 /* bot logic */
 
+const CheckTable = () => {
+    db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER,author TEXT, type TEXT, content TEXT, channel TEXT, createdAt INTEGER)", err => {
+			if (err != null) {
+				console.log(err)
+				return
+			}
+		});
+}
+
 bot.on("ready", () => {
+	db = new sqlite3.Database('db.sqlite3', CheckTable);
 	bot.user.setGame(Settings.bot.playing)
 	bot.user.setUsername(Settings.bot.name)
 	let avatarPath = __dirname + "\\assets\\img\\" + Settings.bot.avatar
@@ -237,8 +250,27 @@ bot.on("ready", () => {
 	})
 })
 
+
+
+const InsertIntoDatabase = row => {
+	let stmt = db.prepare("INSERT INTO messages VALUES (?,?,?,?,?,?)")
+	stmt.run(row.id,row.author,row.type,row.content,row.channel,row.createdAt)
+	stmt.finalize()
+}
+
 const logMessage = message => {
-	console.log("initLogMessage")
+	bot.fetchUser(message.author.id)
+	.then(user => {
+		let msg = {
+			id: message.id,
+			author: user.id + "|||" + user.username,
+			type: message.type,
+			content: message.content,
+			channel: message.channel.name,
+			createdAt: message.createdTimestamp
+		}
+		InsertIntoDatabase(msg)
+	})
 }
 
 bot.on('message', message => {
@@ -265,6 +297,10 @@ app.use('/assets', express.static(__dirname + '/assets'))
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + "/views/home.html")
+})
+
+app.post('/messages', function(req, res) {
+	res.send('not implemented')
 })
 
 app.listen(Settings.port, function () {
