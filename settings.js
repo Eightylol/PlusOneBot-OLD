@@ -1,11 +1,11 @@
 module.exports = {
 	bot : {
-		name: "BOTNAME",
-		playing:"FRESH",
+		name: "+1 - Bot",
+		playing:"Alpha",
 		musicChannel: "Music",
 	},
 	steam: {
-		apikey: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX' // INSERT API KEY HERE
+		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
 	},
 	commandSymbol: "!",
 	port:6543,
@@ -30,6 +30,7 @@ module.exports = {
 		"playing"
 	],
 	soundFx : {
+		// remember to use backslashes before and after \\FOLDERNAME\\SUBFOLDERNAME\\
 		folder: "\\assets\\soundFX\\"
 	}
 
