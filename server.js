@@ -7,11 +7,14 @@ TODO: INTEGRATE STEAM API
 const Settings = require(__dirname + "/settings.js")
 
 /* npm INSTALLS */
-const ony = require("ony"),
+const fs = require('fs'),
+			ony = require("ony"),
 			Discord = require('discord.js'),
 			express = require('express'),
  			http = require('follow-redirects').http,
-			https = require('follow-redirects').https
+			https = require('follow-redirects').https,
+			Promise = require('bluebird'),
+			mp3Duration = require('mp3-duration')
 
 /* install inits */
 const	app = express(),
@@ -69,6 +72,22 @@ const timeStampToHumanReadable = (diff) => {
 	return "The bot has been online for {0} hours, {1} minutes and {2} seconds".format(hours,minutes,seconds);
 }
 
+const playFile = (randomFile) => {
+	for (var _channel of bot.channels) {
+		if (_channel[1].type == "voice" && _channel[1].name == Settings.bot.musicChannel) {
+			let channel = bot.channels.get(_channel[1].id)
+			channel.join().then((voiceConnection) => {
+				voiceConnection.playFile(randomFile, () => {
+					console.log("foo")
+				})
+			})
+			break
+		}
+	}
+}
+
+let playInterval;
+
 const runCommand = (cmd,message) => {
   let commands = cmd.split(" "),
       command = commands[0]
@@ -78,6 +97,50 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "play":
+				clearInterval(playInterval)
+				let subCmd = cmd.replace("play","").trim().length > 0 ? cmd.replace("play","").trim() : null
+				if (subCmd != null) {
+					if (subCmd == "help") {
+						fs.readdir(__dirname + Settings.soundFx.folder, (err,files) => {
+							if (err) {
+								console.log("error")
+								return
+							}
+							let playCmds = []
+							files.forEach(file => {
+								playCmds.push(file.split(".")[0])
+							})
+							message.channel.sendMessage("**Available commands: **" + playCmds.join(" - ") + " | **Usage: **`!play " + playCmds[Math.floor(Math.random() * ((playCmds.length-1) - 0 + 1)) + 0] + "`")
+
+						})
+						return
+					}
+					let filePath = __dirname + Settings.soundFx.folder + subCmd.trim() + ".mp3"
+					fs.exists(filePath, (exists) => {
+					  if (exists) {
+							if (subCmd.trim() == "urinating") {
+								message.channel.sendMessage("")
+							}
+					  	playFile(filePath)
+					  } else {
+							message.channel.sendMessage("**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+						}
+					})
+				} else {
+					fs.readdir(__dirname + Settings.soundFx.folder, (err, files) => {
+						let randomFile = __dirname + Settings.soundFx.folder + files[Math.floor(Math.random() * ((files.length-1) - 0 + 1)) + 0]
+						mp3Duration(randomFile, function (err, duration) {
+						  if (err) return console.log(err.message);
+							let dur = duration * 1000;
+							playFile(randomFile)
+							playInterval = setInterval(() => {
+								playFile(randomFile)
+							},dur)
+						})
+					})
+				}
+			break
 			case "server":
 				Rcon.get(message,cmd.replace("server","").trim())
 			break
@@ -165,7 +228,7 @@ bot.on("ready", () => {
 	bot.user.setGame(Settings.bot.playing);
 })
 
-bot.on('message', (message) => {
+bot.on('message', message => {
 
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
@@ -173,9 +236,7 @@ bot.on('message', (message) => {
     if (msg.startsWith(Settings.commandSymbol)) {
         let command = msg.split(Settings.commandSymbol)[1]
         runCommand(command,message)
-    } else {
-			lastMessages.push(msg)
-		}
+    }
   }
 })
 
