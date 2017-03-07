@@ -1,8 +1,9 @@
 module.exports = {
 	bot : {
-		name: "+1 - Bot",
+		name: "+1 Bot",
 		playing:"Alpha",
 		musicChannel: "Music",
+		avatar: "botAvatar.png"
 	},
 	steam: {
 		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
