@@ -225,7 +225,16 @@ const runCommand = (cmd,message) => {
 /* bot logic */
 
 bot.on("ready", () => {
-	bot.user.setGame(Settings.bot.playing);
+	bot.user.setGame(Settings.bot.playing)
+	bot.user.setUsername(Settings.bot.name)
+	let avatarPath = __dirname + "\\assets\\img\\" + Settings.bot.avatar
+	fs.exists(avatarPath, res => {
+		if (!res) {
+        console.log("Error setting bot avatar. Does " + Settings.bot.avatar + " live in " + __dirname + "\\assets\\img\\" + " ???")
+				return
+    }
+		bot.user.setAvatar(avatarPath)
+	})
 })
 
 bot.on('message', message => {
