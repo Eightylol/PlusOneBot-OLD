@@ -248,9 +248,9 @@ bot.on('message', message => {
   }
 })
 
-bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+bot.login(Settings.bot.token)
 setInterval(() => {
-	bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+	bot.login(Settings.bot.token)
 	console.log("Bot restarted")
 },1000 * 60 * 30)
 
