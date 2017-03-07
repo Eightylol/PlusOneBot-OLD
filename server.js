@@ -237,7 +237,12 @@ bot.on("ready", () => {
 	})
 })
 
+const logMessage = message => {
+	console.log("initLogMessage")
+}
+
 bot.on('message', message => {
+	logMessage(message)
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
     let msg = message.toString()
@@ -247,10 +252,9 @@ bot.on('message', message => {
     }
   }
 })
-
-bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+bot.login(Settings.bot.token)
 setInterval(() => {
-	bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+	bot.login(Settings.bot.token)
 	console.log("Bot restarted")
 },1000 * 60 * 30)
 
