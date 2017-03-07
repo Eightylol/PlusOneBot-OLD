@@ -30,6 +30,7 @@ module.exports = {
 		"playing"
 	],
 	soundFx : {
+		// remember to use backslashes before and after \\FOLDERNAME\\SUBFOLDERNAME\\
 		folder: "\\assets\\soundFX\\"
 	}
 
