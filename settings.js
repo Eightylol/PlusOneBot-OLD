@@ -1,7 +1,8 @@
 module.exports = {
 	bot : {
 		name: "PlusOneBot",
-		playing:"PlusOne <3"
+		playing:"PlusOne <3",
+		musicChannel: "Music",
 	},
 	steam: {
 		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
@@ -14,6 +15,7 @@ module.exports = {
 		"bot-testing"
 	],
 	validCommandArray : [
+		"play",
 		"ping",
 	  "linkcheck",
 	  "shorten",
@@ -26,5 +28,9 @@ module.exports = {
 		"uptime",
 		"avatar",
 		"playing"
-	]
+	],
+	soundFx : {
+		folder: "\\assets\\soundFX\\"
+	}
+
 }
