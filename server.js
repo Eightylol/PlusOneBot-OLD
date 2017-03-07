@@ -310,6 +310,7 @@ app.post('/messages', function(req, res) {
 	fetchMessages((messages) => {
 		messages.forEach(message => {
 			let avatarData = message.author.split("|||") // [0] => userId [1] => userName [2] => [avatarId]
+			message.userId = avatarData[0]
 			message.username = avatarData[1]
 			message.avatar = typeof avatarData[2] != "undefined" ? "https://cdn.discordapp.com/avatars/" + avatarData[0] + "/" + avatarData[2] + ".jpg" : null
 		})
