@@ -4,6 +4,7 @@ ehthumbs.db
 
 # Node modules for node.js
 node_modules/
+assets/soundFX/
 
 # Floobit
 .floo
