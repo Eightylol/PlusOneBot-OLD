@@ -100,6 +100,19 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "test":
+			message.channel.sendMessage("",{embed: {
+				title:"PlusOne-Bot frontend",
+				url:"http://plusone.dan-levi.no/",
+				description: "**PlusOne-Bot frontend up and running**\n",
+				color:3447003,
+				// timestamp: new Date(),
+				footer: {
+		      text: 'Bot author: Dan-Levi Tømta',
+		      icon_url: 'http://dan-levi.no/TemplateData/favicon.ico'
+		    }
+			}})
+			break;
 			case "play":
 				clearInterval(playInterval)
 				let subCmd = cmd.replace("play","").trim().length > 0 ? cmd.replace("play","").trim() : null
@@ -301,6 +314,12 @@ setInterval(() => {
 
 app.use('/public', express.static(__dirname + '/public'))
 app.use('/assets', express.static(__dirname + '/assets'))
+
+app.get('/embeds/simple', function(req,res) {
+	res.send(
+		'fooBar'
+	)
+})
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + "/views/home.html")
