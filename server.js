@@ -29,6 +29,9 @@ let validCommandArray = Settings.validCommandArray
 let lastMessages = []
 let startTime = Date.now()
 
+/* Helpers */
+const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
+
 /* CUSTOM NODES  */
 
 /* Displays user avatar */
@@ -101,17 +104,25 @@ const runCommand = (cmd,message) => {
 
     switch(command) {
 			case "test":
-			message.channel.sendMessage("",{embed: {
-				title:"PlusOne-Bot frontend",
-				url:"http://plusone.dan-levi.no/",
-				description: "**PlusOne-Bot frontend up and running**\n",
-				color:3447003,
-				// timestamp: new Date(),
-				footer: {
-		      text: 'Bot author: Dan-Levi Tømta',
-		      icon_url: 'http://dan-levi.no/TemplateData/favicon.ico'
-		    }
-			}})
+			// console.log(mEmbed)
+			message.channel.sendMessage("",{
+				embed: _embed.rich({
+					title: "Test title",
+					author: {
+						name: "Dan-Levi Tømta",
+						img: "https://gfx.nrk.no/-5_AvMFNhUmAt1wZSUW6TQSt0aXOK3e5O8uiDDdAS87A"
+					},
+					color:"color",
+					description: "This is the description",
+					footer: "this is the footer",
+					img: "https://gfx.nrk.no/-5_AvMFNhUmAt1wZSUW6TQSt0aXOK3e5O8uiDDdAS87A",
+					thumbnail: "https://gfx.nrk.no/-5_AvMFNhUmAt1wZSUW6TQSt0aXOK3e5O8uiDDdAS87A",
+					url: "http://plusone.dan-levi.no",
+					fields: [
+						{title: "Field title 1", value: "Field **value** 1"}
+					]
+				})
+			})
 			break;
 			case "play":
 				clearInterval(playInterval)
@@ -169,7 +180,8 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					message.channel.sendFile(avatar)
+
+					// message.channel.sendFile(avatar)
 					message.delete()
 				})
 			break
@@ -304,22 +316,13 @@ bot.on('message', message => {
     }
   }
 })
+
 bot.login(Settings.bot.token)
-setInterval(() => {
-	bot.login(Settings.bot.token)
-	console.log("Bot restarted")
-},1000 * 60 * 30)
 
 /* app logic */
 
 app.use('/public', express.static(__dirname + '/public'))
 app.use('/assets', express.static(__dirname + '/assets'))
-
-app.get('/embeds/simple', function(req,res) {
-	res.send(
-		'fooBar'
-	)
-})
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + "/views/home.html")
