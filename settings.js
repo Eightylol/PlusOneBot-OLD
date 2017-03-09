@@ -10,7 +10,8 @@ module.exports = {
 		colors: {
 			messages : {
 				info: "#5bc0de",
-				error: "#c9302c"
+				error: "#c9302c",
+				warning: "#f0ad4e"
 			}
 		}
 	},
@@ -25,7 +26,7 @@ module.exports = {
 		"bot-testing"
 	],
 	validCommandArray : [
-		"test",
+		"help",
 		"play",
 		"ping",
 	  "linkcheck",

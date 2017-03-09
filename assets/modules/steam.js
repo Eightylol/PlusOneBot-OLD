@@ -1,5 +1,6 @@
 const SteamApi = require('steam-api')
-const Settings = require(require('path').dirname(require.main.filename) + "\\settings.js")
+const Settings = require(__dirname + "\\..\\..\\settings.js")
+const _embed = require(__dirname + "\\messageEmbed.js")
 const app = new SteamApi.App(Settings.steam.apikey)
 const appNews = new SteamApi.News(Settings.steam.apikey)
 const toMarkdown = require('to-markdown')
@@ -19,51 +20,64 @@ const OutputGameInfo = (message,appId) => {
 			optionalCount = 3,
 			optionalMaxLength = 10
 		).done(function(gNews){
-			let description = toMarkdown(g.description).substring(0,650)
-
-			var gDesc = "";
-
-			gDesc += 	".\n\n__**"+g.name+"**__\n"
-			// if (typeof g.metacritics != "undefined") {
+			let _m = {
+				title: g.name,
+				img: g.header,
+				color: Settings.ui.colors.messages.info,
+				fields: []
+			}
 
 			if (typeof g.metacritic != "undefined" && g.metacritic.score && g.metacritic.url) {
-				gDesc +=	"Metacritics: "
+				let mCritics = {
+					title: "Metacritics",
+					value: ""
+				}
 				let metacritics = []
 				for (var i = 0; i < g.metacritic.length; i++) {
 					let metacritic = g.metacritic[i]
 					metacritics.push("**" + metacritic.score + "** <" + metacritic.url + ">")
 				}
-				gDesc += " **" + metacritics.join("** **") + "** \n"
+				mCritics.value = " **" + metacritics.join("** **") + "** \n"
+				_m.fields.push(mCritics)
 			}
 
 			if (typeof g.price != "undefined" && g.price.currency && g.price.initial && g.price.final) {
 				let price = g.price.final+" ".trim()
-				price = price.substring(0,price.length-2)+".00"
-				gDesc +=	"Price: " + price+ " " + g.price.currency.toLowerCase() + "\n"
+				price = price.substring(0,price.length-2)+" " +g.price.currency
+				_m.fields.push({
+					title: "Price",
+					value: price
+				})
 			}
 
 			if (typeof g.categories != "undefined" && g.categories.length > 0) {
-				gDesc += "Categories: "
 				let categories = []
 				for (var i = 0; i < g.categories.length; i++) {
 					let category = g.categories[i]
 					categories.push(category.description)
 				}
-				gDesc += " **" + categories.join("** **") + "** \n"
-
+				_m.fields.push({
+					title: "Categories",
+					value: categories.join(", ")
+				})
 			}
 
 			if (typeof g.genres != "undefined" && g.genres.length > 0) {
-				gDesc += "Genres: "
 				let genres = []
 				for (var i = 0; i < g.genres.length; i++) {
 					let genre = g.genres[i]
 					genres.push(genre.description)
 				}
-				gDesc += " **" + genres.join("** **") + "** \n"
+				_m.fields.push({
+					title: "Genres",
+					value: genres.join(", ")
+				})
 			}
-			gDesc += g.header + "\n"
-			message.channel.send(gDesc);
+			console.log(g)
+			_m.description = "(Foo)[steam://store/" + g.id+"]"
+			message.channel.sendMessage("",{
+				embed: _embed.rich(_m)
+			})
 		});
 	});
 }
@@ -94,13 +108,17 @@ const ParseParams = (message,search) => {
 			InitGameInfo(message,search)
 			return
 	} else if(q == "top") {
-		message.channel.sendMessage("Top not implemented yet.");
+		message.channel.sendMessage("",{
+			embed: _embed.info("!steam top", "Top not implemented yet.")
+		})
 	}
 }
 
 const steamFunc = (error,message,search) => {
 	if (error != null) {
-		message.channel.sendMessage(search)
+		message.channel.sendMessage("",{
+			embed: _embed.error("!steam", search)
+		})
 		return
 	}
 	search = search.split(" ")

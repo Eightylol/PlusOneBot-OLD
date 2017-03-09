@@ -55,9 +55,17 @@ ErrorFunc = (title,description) => {
 		description: description,
 		color: Settings.ui.colors.messages.error
 	})
+},
+WarningFunc = (title,description) => {
+	return EmbedFunc({
+		title: title,
+		description: description,
+		color: Settings.ui.colors.messages.warning
+	})
 }
 module.exports = {
 	info: InfoFunc,
 	error: ErrorFunc,
+	warning: WarningFunc,
   rich: EmbedFunc
 }

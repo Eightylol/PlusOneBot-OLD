@@ -44,8 +44,6 @@ const L = require(__dirname + "/assets/modules/linkcheck.js")
 const S = require(__dirname + "/assets/modules/shorten.js")
 /* Steam integration */
 const Steam = require(__dirname + "/assets/modules/steam.js")
-/* RCon game server lookup */
-const Rcon = require(__dirname + "/assets/modules/Rcon.js")
 /* Looks up phrase on urban dictionary  */
 const U = require(__dirname + "/assets/modules/urban.js")
 /* Looks up phrase on wikipedia  */
@@ -103,26 +101,10 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
-			case "test":
-			// console.log(mEmbed)
-			message.channel.sendMessage("",{
-				embed: _embed.rich({
-					title: "Test title",
-					author: {
-						name: "Dan-Levi Tømta",
-						img: "https://gfx.nrk.no/-5_AvMFNhUmAt1wZSUW6TQSt0aXOK3e5O8uiDDdAS87A"
-					},
-					color:"color",
-					description: "This is the description",
-					footer: "this is the footer",
-					img: "https://gfx.nrk.no/-5_AvMFNhUmAt1wZSUW6TQSt0aXOK3e5O8uiDDdAS87A",
-					thumbnail: "https://gfx.nrk.no/-5_AvMFNhUmAt1wZSUW6TQSt0aXOK3e5O8uiDDdAS87A",
-					url: "http://plusone.dan-levi.no",
-					fields: [
-						{title: "Field title 1", value: "Field **value** 1"}
-					]
+			case "help":
+				message.channel.sendMessage("", {
+					embed : _embed.info("title","description")
 				})
-			})
 			break;
 			case "play":
 				clearInterval(playInterval)
@@ -131,7 +113,10 @@ const runCommand = (cmd,message) => {
 					if (subCmd == "help") {
 						fs.readdir(__dirname + Settings.soundFx.folder, (err,files) => {
 							if (err) {
-								console.log("error")
+								message.channel.sendMessage("", {
+									embed: _embed.error("!play error",err)
+								})
+								console.log(err)
 								return
 							}
 							let playCmds = []
@@ -147,12 +132,11 @@ const runCommand = (cmd,message) => {
 					let filePath = __dirname + Settings.soundFx.folder + subCmd.trim() + ".mp3"
 					fs.exists(filePath, (exists) => {
 					  if (exists) {
-							if (subCmd.trim() == "urinating") {
-								message.channel.sendMessage("")
-							}
 					  	playFile(filePath)
 					  } else {
-							message.channel.sendMessage("**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+							message.channel.sendMessage("", {
+								embed: _embed.warning("!play warning","**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+							})
 						}
 					})
 				} else {
@@ -170,7 +154,7 @@ const runCommand = (cmd,message) => {
 				}
 			break
 			case "server":
-				Rcon.get(message,cmd.replace("server","").trim())
+			// Fix me!
 			break
 			case "steam":
 				if (commands.length == 1) {
@@ -308,6 +292,7 @@ const logMessage = message => {
 
 bot.on('message', message => {
 	logMessage(message)
+	if (message.author.bot) return
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
     let msg = message.toString()
