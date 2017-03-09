@@ -101,6 +101,9 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "clear":
+
+			break;
 			case "help":
 				let _m = {
 					title: "Help",
@@ -240,7 +243,9 @@ const runCommand = (cmd,message) => {
       break
     }
   } else {
-    //message.channel.sendMessage(message,"This command does not exist")
+    message.channel.sendMessage("",{
+			embed: _embed.error("Error","`!"+command + "` is not a valid command\nType `!help` for list of commands.")
+		})
   }
 }
 
