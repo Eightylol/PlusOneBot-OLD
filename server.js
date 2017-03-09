@@ -66,6 +66,25 @@ if (!String.prototype.format) {
   };
 }
 
+String.prototype.toHHMMSS = function () {
+    let sec_num = parseInt(this, 10);
+    let hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+		let time = ""
+		if (hours != "00") {
+			time += hours + " hours "
+		}
+		if (minutes != "00") {
+			time += minutes + " minutes "
+		}
+		if (seconds != "00") {
+			time += seconds + " seconds "
+		}
+    return time;
+}
+
 const timeStampToHumanReadable = (diff) => {
 	var timestamp = new Date(diff)
 	var hours = ("0" + (timestamp.getHours()-1)).slice(-2)
@@ -205,8 +224,8 @@ const runCommand = (cmd,message) => {
         message.channel.sendMessage("pong")
       break
 			case "uptime":
-				let thisTime = Date.now() - startTime
-        message.channel.sendMessage(timeStampToHumanReadable(thisTime))
+				let uptime = (process.uptime() + "").toHHMMSS()
+        message.channel.sendMessage("",{embed: _embed.info(Settings.bot.name + " uptime",uptime)})
       break
       case "urban":
         U.get(bot,message,cmd.replace("urban ",""))
