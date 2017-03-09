@@ -138,8 +138,9 @@ const runCommand = (cmd,message) => {
 							files.forEach(file => {
 								playCmds.push(file.split(".")[0])
 							})
-							message.channel.sendMessage("**Available commands: **" + playCmds.join(" - ") + " | **Usage: **`!play " + playCmds[Math.floor(Math.random() * ((playCmds.length-1) - 0 + 1)) + 0] + "`")
-
+							message.channel.sendMessage("", {
+								embed: _embed.info("!play help","**Usage: **!play **" + playCmds.join("** | **") + "**")
+							})
 						})
 						return
 					}

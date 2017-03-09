@@ -1,4 +1,5 @@
-const Discord = require('discord.js'),
+const Settings = require(__dirname + "\\..\\..\\settings.js"),
+Discord = require('discord.js'),
 EmbedFunc = (options) => {
 	let embed = new Discord.RichEmbed()
 	if (options.hasOwnProperty("title")) {
@@ -8,7 +9,7 @@ EmbedFunc = (options) => {
 		embed.setAuthor(options.author.name,options.author.img)
 	}
 	if (options.hasOwnProperty("color")) {
-		embed.setColor("#776fff")
+		embed.setColor(options.color)
 	}
 	if (options.hasOwnProperty("description")) {
 		embed.setDescription(options.description)
@@ -36,13 +37,27 @@ EmbedFunc = (options) => {
 			}
 		}
 	}
-
-
-
-
-	embed.setTimestamp()
+	if (options.hasOwnProperty("timestamp")) {
+		embed.setTimestamp()
+	}
 	return embed
+},
+InfoFunc = (title, description) => {
+	return EmbedFunc({
+		title: title,
+		description: description,
+		color: Settings.ui.colors.messages.info
+	})
+},
+ErrorFunc = (title,description) => {
+	return EmbedFunc({
+		title: title,
+		description: description,
+		color: Settings.ui.colors.messages.error
+	})
 }
 module.exports = {
+	info: InfoFunc,
+	error: ErrorFunc,
   rich: EmbedFunc
 }
