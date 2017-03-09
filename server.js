@@ -29,6 +29,9 @@ let validCommandArray = Settings.validCommandArray
 let lastMessages = []
 let startTime = Date.now()
 
+/* Helpers */
+const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
+
 /* CUSTOM NODES  */
 
 /* Displays user avatar */
@@ -41,8 +44,6 @@ const L = require(__dirname + "/assets/modules/linkcheck.js")
 const S = require(__dirname + "/assets/modules/shorten.js")
 /* Steam integration */
 const Steam = require(__dirname + "/assets/modules/steam.js")
-/* RCon game server lookup */
-const Rcon = require(__dirname + "/assets/modules/Rcon.js")
 /* Looks up phrase on urban dictionary  */
 const U = require(__dirname + "/assets/modules/urban.js")
 /* Looks up phrase on wikipedia  */
@@ -63,6 +64,25 @@ if (!String.prototype.format) {
       ;
     });
   };
+}
+
+String.prototype.toHHMMSS = function () {
+    let sec_num = parseInt(this, 10);
+    let hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+		let time = ""
+		if (hours != "00") {
+			time += hours + " hours "
+		}
+		if (minutes != "00") {
+			time += minutes + " minutes "
+		}
+		if (seconds != "00") {
+			time += seconds + " seconds "
+		}
+    return time;
 }
 
 const timeStampToHumanReadable = (diff) => {
@@ -100,6 +120,39 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "clear":
+				if (!message.member.hasPermission('MANAGE_MESSAGES')) return
+				let numMessages = parseInt(commands[1])
+				if (!isNaN(numMessages) && numMessages > 0) {
+					message.channel.bulkDelete(numMessages).then(() => {
+						message.channel.sendMessage("",{embed: _embed.info("Info",numMessages + " messages deleted.")}).then((s) => {
+							s.delete(5000);
+						});
+					})
+				} else {
+					// May be a @someone
+					if (commands[1].startsWith("<")) {
+						let userId = parseInt(commands[1].replace("<@","").replace(">",""))
+						if (!isNaN(userId) && userId > 0) {
+
+						}
+					}
+				}
+			break;
+			case "help":
+				let _m = {
+					title: "Help",
+					thumbnail: bot.user.avatarURL,
+					color: Settings.ui.colors.messages.info
+				}
+				_m.fields = [{
+					title:"Available commands",
+					value: "!" + validCommandArray.join(" **-** !")
+				}]
+				message.channel.sendMessage("", {
+					embed : _embed.rich(_m)
+				})
+			break;
 			case "play":
 				clearInterval(playInterval)
 				let subCmd = cmd.replace("play","").trim().length > 0 ? cmd.replace("play","").trim() : null
@@ -107,27 +160,30 @@ const runCommand = (cmd,message) => {
 					if (subCmd == "help") {
 						fs.readdir(__dirname + Settings.soundFx.folder, (err,files) => {
 							if (err) {
-								console.log("error")
+								message.channel.sendMessage("", {
+									embed: _embed.error("Error",err)
+								})
+								console.log(err)
 								return
 							}
 							let playCmds = []
 							files.forEach(file => {
 								playCmds.push(file.split(".")[0])
 							})
-							message.channel.sendMessage("**Available commands: **" + playCmds.join(" - ") + " | **Usage: **`!play " + playCmds[Math.floor(Math.random() * ((playCmds.length-1) - 0 + 1)) + 0] + "`")
-
+							message.channel.sendMessage("", {
+								embed: _embed.info("Help","**Usage: **!play **" + playCmds.join("** | **") + "**")
+							})
 						})
 						return
 					}
 					let filePath = __dirname + Settings.soundFx.folder + subCmd.trim() + ".mp3"
 					fs.exists(filePath, (exists) => {
 					  if (exists) {
-							if (subCmd.trim() == "urinating") {
-								message.channel.sendMessage("")
-							}
 					  	playFile(filePath)
 					  } else {
-							message.channel.sendMessage("**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+							message.channel.sendMessage("", {
+								embed: _embed.warning("Warning","**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+							})
 						}
 					})
 				} else {
@@ -145,7 +201,7 @@ const runCommand = (cmd,message) => {
 				}
 			break
 			case "server":
-				Rcon.get(message,cmd.replace("server","").trim())
+			// Fix me!
 			break
 			case "steam":
 				if (commands.length == 1) {
@@ -156,7 +212,8 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					message.channel.sendFile(avatar)
+
+					// message.channel.sendFile(avatar)
 					message.delete()
 				})
 			break
@@ -167,8 +224,8 @@ const runCommand = (cmd,message) => {
         message.channel.sendMessage("pong")
       break
 			case "uptime":
-				let thisTime = Date.now() - startTime
-        message.channel.sendMessage(timeStampToHumanReadable(thisTime))
+				let uptime = (process.uptime() + "").toHHMMSS()
+        message.channel.sendMessage("",{embed: _embed.info(Settings.bot.name + " uptime",uptime)})
       break
       case "urban":
         U.get(bot,message,cmd.replace("urban ",""))
@@ -221,7 +278,9 @@ const runCommand = (cmd,message) => {
       break
     }
   } else {
-    //message.channel.sendMessage(message,"This command does not exist")
+    message.channel.sendMessage("",{
+			embed: _embed.error("Error","`!"+command + "` is not a valid command\nType `!help` for list of commands.")
+		})
   }
 }
 
@@ -282,20 +341,15 @@ const logMessage = message => {
 
 bot.on('message', message => {
 	logMessage(message)
+	if (message.author.bot) return
+	if (!message.content.startsWith(Settings.commandSymbol)) return
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
-    let msg = message.toString()
-    if (msg.startsWith(Settings.commandSymbol)) {
-        let command = msg.split(Settings.commandSymbol)[1]
-        runCommand(command,message)
-    }
+    runCommand(message.content.split(Settings.commandSymbol)[1],message)
   }
 })
+
 bot.login(Settings.bot.token)
-setInterval(() => {
-	bot.login(Settings.bot.token)
-	console.log("Bot restarted")
-},1000 * 60 * 30)
 
 /* app logic */
 
@@ -310,6 +364,7 @@ app.post('/messages', function(req, res) {
 	fetchMessages((messages) => {
 		messages.forEach(message => {
 			let avatarData = message.author.split("|||") // [0] => userId [1] => userName [2] => [avatarId]
+			message.userId = avatarData[0]
 			message.username = avatarData[1]
 			message.avatar = typeof avatarData[2] != "undefined" ? "https://cdn.discordapp.com/avatars/" + avatarData[0] + "/" + avatarData[2] + ".jpg" : null
 		})
