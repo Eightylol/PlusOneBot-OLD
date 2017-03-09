@@ -14,17 +14,23 @@ const fs = require('fs'),
  			http = require('follow-redirects').http,
 			https = require('follow-redirects').https,
 			Promise = require('bluebird'),
-			mp3Duration = require('mp3-duration')
+			mp3Duration = require('mp3-duration'),
+			sqlite3 = require('sqlite3').verbose()
 
 /* install inits */
 const	app = express(),
 			bot = new Discord.Client()
+
+let db
 
 /* global variables */
 let validChannels = Settings.validChannels
 let validCommandArray = Settings.validCommandArray
 let lastMessages = []
 let startTime = Date.now()
+
+/* Helpers */
+const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
 
 /* CUSTOM NODES  */
 
@@ -38,8 +44,6 @@ const L = require(__dirname + "/assets/modules/linkcheck.js")
 const S = require(__dirname + "/assets/modules/shorten.js")
 /* Steam integration */
 const Steam = require(__dirname + "/assets/modules/steam.js")
-/* RCon game server lookup */
-const Rcon = require(__dirname + "/assets/modules/Rcon.js")
 /* Looks up phrase on urban dictionary  */
 const U = require(__dirname + "/assets/modules/urban.js")
 /* Looks up phrase on wikipedia  */
@@ -60,6 +64,25 @@ if (!String.prototype.format) {
       ;
     });
   };
+}
+
+String.prototype.toHHMMSS = function () {
+    let sec_num = parseInt(this, 10);
+    let hours   = Math.floor(sec_num / 3600);
+    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+    let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+		let time = ""
+		if (hours != "00") {
+			time += hours + " hours "
+		}
+		if (minutes != "00") {
+			time += minutes + " minutes "
+		}
+		if (seconds != "00") {
+			time += seconds + " seconds "
+		}
+    return time;
 }
 
 const timeStampToHumanReadable = (diff) => {
@@ -97,6 +120,39 @@ const runCommand = (cmd,message) => {
   if (commandIsValid) {
 
     switch(command) {
+			case "clear":
+				if (!message.member.hasPermission('MANAGE_MESSAGES')) return
+				let numMessages = parseInt(commands[1])
+				if (!isNaN(numMessages) && numMessages > 0) {
+					message.channel.bulkDelete(numMessages).then(() => {
+						message.channel.sendMessage("",{embed: _embed.info("Info",numMessages + " messages deleted.")}).then((s) => {
+							s.delete(5000);
+						});
+					})
+				} else {
+					// May be a @someone
+					if (commands[1].startsWith("<")) {
+						let userId = parseInt(commands[1].replace("<@","").replace(">",""))
+						if (!isNaN(userId) && userId > 0) {
+
+						}
+					}
+				}
+			break;
+			case "help":
+				let _m = {
+					title: "Help",
+					thumbnail: bot.user.avatarURL,
+					color: Settings.ui.colors.messages.info
+				}
+				_m.fields = [{
+					title:"Available commands",
+					value: "!" + validCommandArray.join(" **-** !")
+				}]
+				message.channel.sendMessage("", {
+					embed : _embed.rich(_m)
+				})
+			break;
 			case "play":
 				clearInterval(playInterval)
 				let subCmd = cmd.replace("play","").trim().length > 0 ? cmd.replace("play","").trim() : null
@@ -104,27 +160,30 @@ const runCommand = (cmd,message) => {
 					if (subCmd == "help") {
 						fs.readdir(__dirname + Settings.soundFx.folder, (err,files) => {
 							if (err) {
-								console.log("error")
+								message.channel.sendMessage("", {
+									embed: _embed.error("Error",err)
+								})
+								console.log(err)
 								return
 							}
 							let playCmds = []
 							files.forEach(file => {
 								playCmds.push(file.split(".")[0])
 							})
-							message.channel.sendMessage("**Available commands: **" + playCmds.join(" - ") + " | **Usage: **`!play " + playCmds[Math.floor(Math.random() * ((playCmds.length-1) - 0 + 1)) + 0] + "`")
-
+							message.channel.sendMessage("", {
+								embed: _embed.info("Help","**Usage: **!play **" + playCmds.join("** | **") + "**")
+							})
 						})
 						return
 					}
 					let filePath = __dirname + Settings.soundFx.folder + subCmd.trim() + ".mp3"
 					fs.exists(filePath, (exists) => {
 					  if (exists) {
-							if (subCmd.trim() == "urinating") {
-								message.channel.sendMessage("")
-							}
 					  	playFile(filePath)
 					  } else {
-							message.channel.sendMessage("**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+							message.channel.sendMessage("", {
+								embed: _embed.warning("Warning","**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+							})
 						}
 					})
 				} else {
@@ -142,7 +201,7 @@ const runCommand = (cmd,message) => {
 				}
 			break
 			case "server":
-				Rcon.get(message,cmd.replace("server","").trim())
+			// Fix me!
 			break
 			case "steam":
 				if (commands.length == 1) {
@@ -153,7 +212,8 @@ const runCommand = (cmd,message) => {
       break
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-					message.channel.sendFile(avatar)
+
+					// message.channel.sendFile(avatar)
 					message.delete()
 				})
 			break
@@ -164,8 +224,8 @@ const runCommand = (cmd,message) => {
         message.channel.sendMessage("pong")
       break
 			case "uptime":
-				let thisTime = Date.now() - startTime
-        message.channel.sendMessage(timeStampToHumanReadable(thisTime))
+				let uptime = (process.uptime() + "").toHHMMSS()
+        message.channel.sendMessage("",{embed: _embed.info(Settings.bot.name + " uptime",uptime)})
       break
       case "urban":
         U.get(bot,message,cmd.replace("urban ",""))
@@ -218,29 +278,78 @@ const runCommand = (cmd,message) => {
       break
     }
   } else {
-    //message.channel.sendMessage(message,"This command does not exist")
+    message.channel.sendMessage("",{
+			embed: _embed.error("Error","`!"+command + "` is not a valid command\nType `!help` for list of commands.")
+		})
   }
 }
 
 /* bot logic */
 
+const CheckTable = () => {
+  db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER,author TEXT, type TEXT, content TEXT, channel TEXT, createdAt INTEGER)", err => {
+		if (err != null) {
+			console.log(err)
+			return
+		}
+	});
+}
+
 bot.on("ready", () => {
-	bot.user.setGame(Settings.bot.playing);
+	db = new sqlite3.Database('db.sqlite3', CheckTable);
+	bot.user.setGame(Settings.bot.playing)
+	bot.user.setUsername(Settings.bot.name)
+	let avatarPath = __dirname + "\\assets\\img\\" + Settings.bot.avatar
+	fs.exists(avatarPath, res => {
+		if (!res) {
+        console.log("Error setting bot avatar. Does " + Settings.bot.avatar + " live in " + __dirname + "\\assets\\img\\" + " ???")
+				return
+    }
+		bot.user.setAvatar(avatarPath)
+	})
 })
 
-bot.on('message', message => {
 
+
+const InsertIntoDatabase = row => {
+	let stmt = db.prepare("INSERT INTO messages VALUES (?,?,?,?,?,?)")
+	stmt.run(row.id,row.author,row.type,row.content,row.channel,row.createdAt)
+	stmt.finalize()
+}
+
+function fetchMessages(cb) {
+	db.all("SELECT * FROM messages ORDER BY id DESC", function(err, data) {
+		cb(data)
+		return
+  })
+}
+
+const logMessage = message => {
+	bot.fetchUser(message.author.id)
+	.then(user => {
+		let msg = {
+			id: message.id,
+			author: user.id + "|||" + user.username + "|||" + user.avatar,
+			type: message.type,
+			content: message.content,
+			channel: message.channel.name,
+			createdAt: message.createdTimestamp
+		}
+		InsertIntoDatabase(msg)
+	})
+}
+
+bot.on('message', message => {
+	logMessage(message)
+	if (message.author.bot) return
+	if (!message.content.startsWith(Settings.commandSymbol)) return
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
-    let msg = message.toString()
-    if (msg.startsWith(Settings.commandSymbol)) {
-        let command = msg.split(Settings.commandSymbol)[1]
-        runCommand(command,message)
-    }
+    runCommand(message.content.split(Settings.commandSymbol)[1],message)
   }
 })
 
-bot.login('Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI')
+bot.login(Settings.bot.token)
 
 /* app logic */
 
@@ -249,6 +358,19 @@ app.use('/assets', express.static(__dirname + '/assets'))
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + "/views/home.html")
+})
+
+app.post('/messages', function(req, res) {
+	fetchMessages((messages) => {
+		messages.forEach(message => {
+			let avatarData = message.author.split("|||") // [0] => userId [1] => userName [2] => [avatarId]
+			message.userId = avatarData[0]
+			message.username = avatarData[1]
+			message.avatar = typeof avatarData[2] != "undefined" ? "https://cdn.discordapp.com/avatars/" + avatarData[0] + "/" + avatarData[2] + ".jpg" : null
+		})
+		res.setHeader('Content-Type', 'application/json')
+		res.send(messages)
+	})
 })
 
 app.listen(Settings.port, function () {
