@@ -102,8 +102,17 @@ const runCommand = (cmd,message) => {
 
     switch(command) {
 			case "help":
+				let _m = {
+					title: "Help",
+					thumbnail: bot.user.avatarURL,
+					color: Settings.ui.colors.messages.info
+				}
+				_m.fields = [{
+					title:"Available commands",
+					value: "!" + validCommandArray.join(" **-** !")
+				}]
 				message.channel.sendMessage("", {
-					embed : _embed.info("title","description")
+					embed : _embed.rich(_m)
 				})
 			break;
 			case "play":
@@ -114,7 +123,7 @@ const runCommand = (cmd,message) => {
 						fs.readdir(__dirname + Settings.soundFx.folder, (err,files) => {
 							if (err) {
 								message.channel.sendMessage("", {
-									embed: _embed.error("!play error",err)
+									embed: _embed.error("Error",err)
 								})
 								console.log(err)
 								return
@@ -124,7 +133,7 @@ const runCommand = (cmd,message) => {
 								playCmds.push(file.split(".")[0])
 							})
 							message.channel.sendMessage("", {
-								embed: _embed.info("!play help","**Usage: **!play **" + playCmds.join("** | **") + "**")
+								embed: _embed.info("Help","**Usage: **!play **" + playCmds.join("** | **") + "**")
 							})
 						})
 						return
@@ -135,7 +144,7 @@ const runCommand = (cmd,message) => {
 					  	playFile(filePath)
 					  } else {
 							message.channel.sendMessage("", {
-								embed: _embed.warning("!play warning","**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
+								embed: _embed.warning("Warning","**`!play " + subCmd + "`** is not a valid command. Type `!play help` for more.")
 							})
 						}
 					})
@@ -293,13 +302,10 @@ const logMessage = message => {
 bot.on('message', message => {
 	logMessage(message)
 	if (message.author.bot) return
+	if (!message.content.startsWith(Settings.commandSymbol)) return
   let channelName = message.channel.name
   if (validChannels.indexOf(channelName) != -1) {
-    let msg = message.toString()
-    if (msg.startsWith(Settings.commandSymbol)) {
-        let command = msg.split(Settings.commandSymbol)[1]
-        runCommand(command,message)
-    }
+    runCommand(message.content.split(Settings.commandSymbol)[1],message)
   }
 })
 
