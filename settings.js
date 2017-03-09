@@ -26,6 +26,7 @@ module.exports = {
 		"bot-testing"
 	],
 	validCommandArray : [
+		"clear",
 		"help",
 		"play",
 		"ping",

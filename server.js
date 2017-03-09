@@ -102,7 +102,20 @@ const runCommand = (cmd,message) => {
 
     switch(command) {
 			case "clear":
-
+				let numMessages = parseInt(commands[1])
+				if (!isNaN(numMessages) && numMessages > 0) {
+					message.channel.fetchMessages({ limit: numMessages}).then((messagesToDelete) => {
+						const messagePromises = messagesToDelete.deleteAll();
+						Promise.all(messagePromises).then(() => {
+							message.channel.sendMessage("",{embed: _embed.info("Info",numMessages + " messages deleted.")}).then((s) => {
+								s.delete(5000);
+							});
+						}).catch((e) => {
+							message.channel.sendMessage(':face_palm: I might not have the right permissions to do that.');
+							console.log(e);
+						});
+					})
+				}
 			break;
 			case "help":
 				let _m = {
