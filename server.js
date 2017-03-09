@@ -102,19 +102,22 @@ const runCommand = (cmd,message) => {
 
     switch(command) {
 			case "clear":
+				if (!message.member.hasPermission('MANAGE_MESSAGES')) return
 				let numMessages = parseInt(commands[1])
 				if (!isNaN(numMessages) && numMessages > 0) {
-					message.channel.fetchMessages({ limit: numMessages}).then((messagesToDelete) => {
-						const messagePromises = messagesToDelete.deleteAll();
-						Promise.all(messagePromises).then(() => {
-							message.channel.sendMessage("",{embed: _embed.info("Info",numMessages + " messages deleted.")}).then((s) => {
-								s.delete(5000);
-							});
-						}).catch((e) => {
-							message.channel.sendMessage(':face_palm: I might not have the right permissions to do that.');
-							console.log(e);
+					message.channel.bulkDelete(numMessages).then(() => {
+						message.channel.sendMessage("",{embed: _embed.info("Info",numMessages + " messages deleted.")}).then((s) => {
+							s.delete(5000);
 						});
 					})
+				} else {
+					// May be a @someone
+					if (commands[1].startsWith("<")) {
+						let userId = parseInt(commands[1].replace("<@","").replace(">",""))
+						if (!isNaN(userId) && userId > 0) {
+
+						}
+					}
 				}
 			break;
 			case "help":
