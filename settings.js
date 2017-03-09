@@ -6,6 +6,15 @@ module.exports = {
 		avatar: "botAvatar.png",
 		token: "Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI"
 	},
+	ui : {
+		colors: {
+			messages : {
+				info: "#5bc0de",
+				error: "#c9302c",
+				warning: "#f0ad4e"
+			}
+		}
+	},
 	steam: {
 		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
 	},
@@ -17,7 +26,8 @@ module.exports = {
 		"bot-testing"
 	],
 	validCommandArray : [
-		"test",
+		"clear",
+		"help",
 		"play",
 		"ping",
 	  "linkcheck",
