@@ -1,12 +1,13 @@
-
+let modulesPath = __dirname+ "/assets/modules/"
 module.exports = {
-	A: require(__dirname + "/assets/modules/avatar.js"),
-	B: require(__dirname + "/assets/modules/bing.js"),
-	Clear: require(__dirname + "/assets/modules/clear.js"),
-	L: require(__dirname + "/assets/modules/linkcheck.js"),
-	S: require(__dirname + "/assets/modules/shorten.js"),
-	Steam: require(__dirname + "/assets/modules/steam.js"),
-	U: require(__dirname + "/assets/modules/urban.js"),
-	W: require(__dirname + "/assets/modules/wiki.js"),
-	I: require(__dirname + "/assets/modules/imgur.js")
+	A: require(modulesPath + "avatar.js"),
+	B: require(modulesPath + "bing.js"),
+	Clear: require(modulesPath + "clear.js"),
+	G: require(modulesPath + "gServer.js"),
+	I: require(modulesPath + "imgur.js"),
+	L: require(modulesPath + "linkcheck.js"),
+	S: require(modulesPath + "shorten.js"),
+	Steam: require(modulesPath + "steam.js"),
+	U: require(modulesPath + "urban.js"),
+	W: require(modulesPath + "wiki.js"),
 }

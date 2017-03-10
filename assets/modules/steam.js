@@ -6,8 +6,6 @@ const toMarkdown = require('to-markdown')
 const q = require('q')
 let appList;
 
-console.log(app)
-
 app.GetAppList().done(function(result){
 	appList = result
 })
