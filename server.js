@@ -43,17 +43,15 @@ String.prototype.toHHMMSS = function () {
 			time += minutes + " minutes "
 		if (seconds != "00")
 			time += seconds + " seconds "
-    return time;
+    return time
 }
 
 const timeStampToHumanReadable = (diff) => {
 	var timestamp = new Date(diff)
 	var hours = ("0" + (timestamp.getHours()-1)).slice(-2)
-	// Minutes part from the timestamp
-	var minutes = ("0" + timestamp.getMinutes()).slice(-2);
-	// Seconds part from the timestamp
-	var seconds = ("0" + timestamp.getSeconds()).slice(-2);
-	return "The bot has been online for {0} hours, {1} minutes and {2} seconds".format(hours,minutes,seconds);
+	var minutes = ("0" + timestamp.getMinutes()).slice(-2)
+	var seconds = ("0" + timestamp.getSeconds()).slice(-2)
+	return "The bot has been online for {0} hours, {1} minutes and {2} seconds".format(hours,minutes,seconds)
 }
 
 const playFile = (randomFile) => {
@@ -91,7 +89,7 @@ const runCommand = (cmd,message) => {
 						m.delete(5000)
 					})
 				})
-			break;
+			break
 
 			case "help":
 				let _m = {
@@ -106,7 +104,7 @@ const runCommand = (cmd,message) => {
 				message.channel.sendMessage("", {
 					embed : _embed.rich(_m)
 				})
-			break;
+			break
 
 			case "play":
 				clearInterval(playInterval)
@@ -145,8 +143,8 @@ const runCommand = (cmd,message) => {
 					fs.readdir(__dirname + Settings.soundFx.folder, (err, files) => {
 						let randomFile = __dirname + Settings.soundFx.folder + files[Math.floor(Math.random() * ((files.length-1) - 0 + 1)) + 0]
 						mp3Duration(randomFile, function (err, duration) {
-						  if (err) return console.log(err.message);
-							let dur = duration * 1000;
+						  if (err) return console.log(err.message)
+							let dur = duration * 1000
 							playFile(randomFile)
 							playInterval = setInterval(() => {
 								playFile(randomFile)
@@ -181,7 +179,7 @@ const runCommand = (cmd,message) => {
 			break
 
 			case "playing":
-				bot.user.setGame(cmd.replace("playing ",""));
+				bot.user.setGame(cmd.replace("playing ",""))
 			break
 
 			case "ping":
@@ -215,19 +213,19 @@ const runCommand = (cmd,message) => {
 						if (err) {
 							message.channel.sendMessage("Error!")
 						} else {
-							message.channel.sendMessage(r_link);
+							message.channel.sendMessage(r_link)
 						}
 					},bot)
         } else {
           if (commands.length != 2) {
             message.channel.sendMessage("Invalid input")
           } else {
-            let link = commands[1].trim().toLowerCase();
+            let link = commands[1].trim().toLowerCase()
             L.checkLink(link,message, (err,r_link) => {
               if (err) {
                 message.channel.sendMessage("Error!")
               } else {
-                message.channel.sendMessage(r_link);
+                message.channel.sendMessage(r_link)
               }
             })
           }
@@ -266,7 +264,7 @@ const CheckTable = () => {
 }
 
 bot.on("ready", () => {
-	db = new sqlite3.Database('db.sqlite3', CheckTable);
+	db = new sqlite3.Database('db.sqlite3', CheckTable)
 	bot.user.setGame(Settings.bot.playing)
 	bot.user.setUsername(Settings.bot.name)
 	let avatarPath = __dirname + "\\assets\\img\\" + Settings.bot.avatar
