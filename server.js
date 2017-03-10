@@ -14,7 +14,7 @@ let db,
 
 const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
 
-const {A,B,Clear,L,S,Steam,U,W,I} = require(__dirname + '\\modules.js')
+const {A,B,Clear,L,S,Steam,U,W,I,G} = require(__dirname + '\\modules.js')
 
 if (!String.prototype.format) {
   String.prototype.format = function() {
@@ -159,7 +159,41 @@ const runCommand = (cmd,message) => {
 			break
 
 			case "server":
-			// Fix me!
+				G.get(commands[1], (err,gServers) => {
+					if (err) {
+						if (err == "empty") {
+							message.channel.sendMessage("", {
+								embed: _embed.rich({
+									color: Settings.ui.colors.messages.warning,
+									thumbnail: bot.user.avatarURL,
+									fields: [
+										{title: "Usage", value: "`!server <ip|hostname>[:port]`"},
+										{title: "Examples", value: "`!server 93.190.140.106:27015`"}
+									]
+								})
+							})
+						}
+						return
+					}
+					if (gServers && gServers.length > 0) {
+						let _em = {
+							title: "Servers on " + commands[1],
+							description: "Beneath is a list of servers associated to " + commands[1],
+							color:Settings.ui.colors.messages.info,
+							thumbnail: bot.user.avatarURL,
+							fields: []
+						}
+						gServers.forEach(gServer => {
+							_em.fields.push({
+								title: gServer.title,
+								value: "IP: " + gServer.ip + " Port: " + gServer.port
+							})
+						})
+						message.channel.sendMessage("", {
+							embed: _embed.rich(_em)
+						})
+					}
+				})
 			break
 
 			case "steam":
