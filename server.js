@@ -1,59 +1,21 @@
 "use strict"
-/*
-TODO: INTEGRATE STEAM API
-*/
 
-/* default configuration. Only edit if you really know what yopu are doing */
-const Settings = require(__dirname + "/settings.js")
+const {Settings, fs, ony, Discord, express, http, https, Promise, mp3Duration, sqlite3} = require(__dirname + '\\init.js')
 
-/* npm INSTALLS */
-const fs = require('fs'),
-			ony = require("ony"),
-			Discord = require('discord.js'),
-			express = require('express'),
- 			http = require('follow-redirects').http,
-			https = require('follow-redirects').https,
-			Promise = require('bluebird'),
-			mp3Duration = require('mp3-duration'),
-			sqlite3 = require('sqlite3').verbose()
-
-/* install inits */
 const	app = express(),
 			bot = new Discord.Client()
 
-let db
+let db,
+		validChannels = Settings.validChannels,
+		validCommandArray = Settings.validCommandArray,
+		lastMessages = [],
+		startTime = Date.now(),
+		playInterval
 
-/* global variables */
-let validChannels = Settings.validChannels
-let validCommandArray = Settings.validCommandArray
-let lastMessages = []
-let startTime = Date.now()
-
-/* Helpers */
 const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
 
-/* CUSTOM NODES  */
+const {A,B,Clear,L,S,Steam,U,W,I} = require(__dirname + '\\modules.js')
 
-/* Displays user avatar */
-const A = require(__dirname + "/assets/modules/avatar.js")
-/* Looks up phare on google */
-const B = require(__dirname + "/assets/modules/bing.js")
-/* Checks links, if they are "dirty", in other words not all redirects are followed */
-const L = require(__dirname + "/assets/modules/linkcheck.js")
-/* Shortens links with the ony module  */
-const S = require(__dirname + "/assets/modules/shorten.js")
-/* Steam integration */
-const Steam = require(__dirname + "/assets/modules/steam.js")
-/* Looks up phrase on urban dictionary  */
-const U = require(__dirname + "/assets/modules/urban.js")
-/* Looks up phrase on wikipedia  */
-const W = require(__dirname + "/assets/modules/wiki.js")
-/* Looks up images on imgur  */
-const I = require(__dirname + "/assets/modules/imgur.js")
-
-/* main logic */
-
-// First, checks if it isn't implemented yet.
 if (!String.prototype.format) {
   String.prototype.format = function() {
     var args = arguments;
@@ -67,21 +29,20 @@ if (!String.prototype.format) {
 }
 
 String.prototype.toHHMMSS = function () {
-    let sec_num = parseInt(this, 10);
-    let hours   = Math.floor(sec_num / 3600);
-    let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-    let seconds = sec_num - (hours * 3600) - (minutes * 60);
-
-		let time = ""
-		if (hours != "00") {
+    let sec_num = parseInt(this, 10),
+				days = Math.floor(sec_num / (24 * 60 * 60)),
+    		hours   = Math.floor(sec_num / 3600),
+    		minutes = Math.floor((sec_num - (hours * 3600)) / 60),
+    		seconds = sec_num - (hours * 3600) - (minutes * 60),
+				time = ""
+		if (days != 0)
+			time += days + " days "
+		if (hours != "00")
 			time += hours + " hours "
-		}
-		if (minutes != "00") {
+		if (minutes != "00")
 			time += minutes + " minutes "
-		}
-		if (seconds != "00") {
+		if (seconds != "00")
 			time += seconds + " seconds "
-		}
     return time;
 }
 
@@ -109,36 +70,29 @@ const playFile = (randomFile) => {
 	}
 }
 
-let playInterval;
 
 const runCommand = (cmd,message) => {
   let commands = cmd.split(" "),
       command = commands[0]
 
-	let commandIsValid = validCommandArray.indexOf(command) != -1
-
-  if (commandIsValid) {
+  if (validCommandArray.indexOf(command) != -1) {
 
     switch(command) {
-			case "clear":
-				if (!message.member.hasPermission('MANAGE_MESSAGES')) return
-				let numMessages = parseInt(commands[1])
-				if (!isNaN(numMessages) && numMessages > 0) {
-					message.channel.bulkDelete(numMessages).then(() => {
-						message.channel.sendMessage("",{embed: _embed.info("Info",numMessages + " messages deleted.")}).then((s) => {
-							s.delete(5000);
-						});
-					})
-				} else {
-					// May be a @someone
-					if (commands[1].startsWith("<")) {
-						let userId = parseInt(commands[1].replace("<@","").replace(">",""))
-						if (!isNaN(userId) && userId > 0) {
 
-						}
+			case "clear":
+				Clear.get(message,commands, (err,result) => {
+					if (err != null) {
+						message.channel.sendMessage("",{embed: _embed.error("Clear",err.message)}).then(m => {
+							m.delete(5000)
+						})
+						return
 					}
-				}
+					message.channel.sendMessage("",{embed: _embed.info("Clear",result)}).then(m => {
+						m.delete(5000)
+					})
+				})
 			break;
+
 			case "help":
 				let _m = {
 					title: "Help",
@@ -153,6 +107,7 @@ const runCommand = (cmd,message) => {
 					embed : _embed.rich(_m)
 				})
 			break;
+
 			case "play":
 				clearInterval(playInterval)
 				let subCmd = cmd.replace("play","").trim().length > 0 ? cmd.replace("play","").trim() : null
@@ -200,9 +155,11 @@ const runCommand = (cmd,message) => {
 					})
 				}
 			break
+
 			case "server":
 			// Fix me!
 			break
+
 			case "steam":
 				if (commands.length == 1) {
 					Steam.get(true,message,"Not supported")
@@ -210,35 +167,48 @@ const runCommand = (cmd,message) => {
 					Steam.get(null,message,cmd.replace("steam",""))
 				}
       break
+
 			case "avatar":
 				A.get(bot,message, cmd.replace("avatar","").trim(), (avatar) => {
-
-					// message.channel.sendFile(avatar)
+					message.channel.sendMessage("", {
+						embed: _embed.rich({
+							title: message.author.username,
+							img: avatar
+						})
+					})
 					message.delete()
 				})
 			break
+
 			case "playing":
 				bot.user.setGame(cmd.replace("playing ",""));
 			break
+
 			case "ping":
         message.channel.sendMessage("pong")
       break
+
 			case "uptime":
 				let uptime = (process.uptime() + "").toHHMMSS()
         message.channel.sendMessage("",{embed: _embed.info(Settings.bot.name + " uptime",uptime)})
       break
+
       case "urban":
         U.get(bot,message,cmd.replace("urban ",""))
       break
+
       case "wiki":
         W.get(bot,message,cmd.replace("wiki ",""))
       break
+
 			case "google":
         B.get(message,cmd.replace("google ",""))
       break
+
 			case "imgur":
         I.get(message,cmd.replace("imgur ",""))
       break
+
       case "linkcheck":
         if (commands == 1) {
 					L.checkLink(null,message, (err,r_link) => {
@@ -263,6 +233,7 @@ const runCommand = (cmd,message) => {
           }
         }
       break
+
       case "shorten":
         if (commands.length != 2) {
           message.channel.sendMessage(message,"Syntax error")
@@ -276,6 +247,7 @@ const runCommand = (cmd,message) => {
           }
         })
       break
+
     }
   } else {
     message.channel.sendMessage("",{
@@ -283,8 +255,6 @@ const runCommand = (cmd,message) => {
 		})
   }
 }
-
-/* bot logic */
 
 const CheckTable = () => {
   db.run("CREATE TABLE IF NOT EXISTS messages (id INTEGER,author TEXT, type TEXT, content TEXT, channel TEXT, createdAt INTEGER)", err => {
@@ -308,8 +278,6 @@ bot.on("ready", () => {
 		bot.user.setAvatar(avatarPath)
 	})
 })
-
-
 
 const InsertIntoDatabase = row => {
 	let stmt = db.prepare("INSERT INTO messages VALUES (?,?,?,?,?,?)")
@@ -350,8 +318,6 @@ bot.on('message', message => {
 })
 
 bot.login(Settings.bot.token)
-
-/* app logic */
 
 app.use('/public', express.static(__dirname + '/public'))
 app.use('/assets', express.static(__dirname + '/assets'))
