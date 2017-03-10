@@ -95,12 +95,13 @@ const runCommand = (cmd,message) => {
 				let _m = {
 					title: "Help",
 					thumbnail: bot.user.avatarURL,
-					color: Settings.ui.colors.messages.info
+					color: Settings.ui.colors.messages.info,
+					fields : []
 				}
-				_m.fields = [{
+				_m.fields.push({
 					title:"Available commands",
 					value: "!" + validCommandArray.join(" **-** !")
-				}]
+				})
 				message.channel.sendMessage("", {
 					embed : _embed.rich(_m)
 				})
@@ -132,6 +133,9 @@ const runCommand = (cmd,message) => {
 					let filePath = __dirname + Settings.soundFx.folder + subCmd.trim() + ".mp3"
 					fs.exists(filePath, (exists) => {
 					  if (exists) {
+							message.channel.sendMessage("", {
+								embed: _embed.info("!play", "Playing " + subCmd)
+							})
 					  	playFile(filePath)
 					  } else {
 							message.channel.sendMessage("", {

@@ -2,83 +2,85 @@ const SteamApi = require('steam-api')
 const Settings = require(__dirname + "\\..\\..\\settings.js")
 const _embed = require(__dirname + "\\messageEmbed.js")
 const app = new SteamApi.App(Settings.steam.apikey)
-const appNews = new SteamApi.News(Settings.steam.apikey)
 const toMarkdown = require('to-markdown')
 const q = require('q')
 let appList;
 
+console.log(app)
+
 app.GetAppList().done(function(result){
 	appList = result
-	console.log("Steam: app list updated... ("+appList.length+" titles)")
 })
 
 const OutputGameInfo = (message,appId) => {
 	app.appDetails(appId).done(function(g){
-		// console.log(g)
-		appNews.GetNewsForApp(
-			appId,
-			optionalCount = 3,
-			optionalMaxLength = 10
-		).done(function(gNews){
-			let _m = {
-				title: g.name,
-				img: g.header,
-				color: Settings.ui.colors.messages.info,
-				fields: []
-			}
+		let _m = {
+			title: g.name,
+			img: g.header,
+			color: Settings.ui.colors.messages.info,
+			fields: []
+		}
 
-			if (typeof g.metacritic != "undefined" && g.metacritic.score && g.metacritic.url) {
-				let mCritics = {
-					title: "Metacritics",
-					value: ""
-				}
-				let metacritics = []
-				for (var i = 0; i < g.metacritic.length; i++) {
-					let metacritic = g.metacritic[i]
-					metacritics.push("**" + metacritic.score + "** <" + metacritic.url + ">")
-				}
-				mCritics.value = " **" + metacritics.join("** **") + "** \n"
-				_m.fields.push(mCritics)
+		if (typeof g.metacritic != "undefined" && g.metacritic.score && g.metacritic.url) {
+			let mCritics = {
+				title: "Metacritics",
+				value: "**Score** " + g.metacritic.score + "\n" + g.metacritic.url
 			}
+			_m.fields.push(mCritics)
+		}
 
-			if (typeof g.price != "undefined" && g.price.currency && g.price.initial && g.price.final) {
-				let price = g.price.final+" ".trim()
-				price = price.substring(0,price.length-2)+" " +g.price.currency
-				_m.fields.push({
-					title: "Price",
-					value: price
-				})
-			}
-
-			if (typeof g.categories != "undefined" && g.categories.length > 0) {
-				let categories = []
-				for (var i = 0; i < g.categories.length; i++) {
-					let category = g.categories[i]
-					categories.push(category.description)
-				}
-				_m.fields.push({
-					title: "Categories",
-					value: categories.join(", ")
-				})
-			}
-
-			if (typeof g.genres != "undefined" && g.genres.length > 0) {
-				let genres = []
-				for (var i = 0; i < g.genres.length; i++) {
-					let genre = g.genres[i]
-					genres.push(genre.description)
-				}
-				_m.fields.push({
-					title: "Genres",
-					value: genres.join(", ")
-				})
-			}
-			console.log(g)
-			_m.description = "(Foo)[steam://store/" + g.id+"]"
-			message.channel.sendMessage("",{
-				embed: _embed.rich(_m)
+		if (typeof g.price != "undefined" && g.price.currency && g.price.initial && g.price.final) {
+			let price = g.price.final+" ".trim()
+			price = price.substring(0,price.length-2)+" " +g.price.currency
+			_m.fields.push({
+				title: "Price",
+				value: price
 			})
-		});
+		}
+
+		if (typeof g.categories != "undefined" && g.categories.length > 0) {
+			let categories = []
+			for (var i = 0; i < g.categories.length; i++) {
+				let category = g.categories[i]
+				categories.push(category.description)
+			}
+			_m.fields.push({
+				title: "Categories",
+				value: categories.join(", ")
+			})
+		}
+
+		if (typeof g.genres != "undefined" && g.genres.length > 0) {
+			let genres = []
+			for (var i = 0; i < g.genres.length; i++) {
+				let genre = g.genres[i]
+				genres.push(genre.description)
+			}
+			_m.fields.push({
+				title: "Genres",
+				value: genres.join(", ")
+			})
+		}
+
+		if (typeof g.platforms != "undefined") {
+			_m.fields.push({
+				title: "Platforms",
+				value: "**Windows:** " + ( g.platforms.windows ? "yes " : "no " ) + "**Mac:** " + ( g.platforms.mac ? "yes " : "no " ) + "**Linux:** " + ( g.platforms.linux ? "yes " : "no " )
+			})
+		}
+
+		if (typeof g.release != "undefined") {
+			_m.fields.push({
+				title: "Release",
+				value: g.release.date
+			})
+		}
+
+
+		// console.log(g)
+		message.channel.sendMessage("",{
+			embed: _embed.rich(_m)
+		})
 	});
 }
 
