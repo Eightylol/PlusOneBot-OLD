@@ -1,10 +1,10 @@
 const Settings = require(__dirname + "\\..\\..\\settings.js"),
 			SteamApi = require('steam-api'),
-			app = new SteamApi.App(Settings.steam.apikey),
-			SourceCon = require("sourcecon")
+			app = new SteamApi.App(Settings.steam.apikey)
 
 const gamedir = {
-	conanexiles: "Conan Exiles"
+	conanexiles: "Conan Exiles",
+	cstrike: "Counter-Strike: Source"
 }
 
 const gServerFunc = (ipAndPort,cb) => {
@@ -26,32 +26,9 @@ const gServerFunc = (ipAndPort,cb) => {
 					gServer.ip = _split[0]
 					gServer.port = _split[1]
 				}
-				let con = new SourceCon(gServer.ip, gServer.port);
-				try {
-					con.connect(function(err) {
-				    if (err) {
-							console.log(err)
-			        return
-				    }
-				    con.auth("rconpass", function(err) {
-			        if (err) {
-		            throw(err)
-			        }
-			        con.send("status", function(err, res) {
-		            if (err) {
-	                throw(err)
-		            }
-		            console.log("STATUS: "+res)
-			        })
-				    })
-					})
-				} catch (e) {
-					console.log("foo")
-				}
 				gServers.push(gServer)
 			})
 			cb(null,gServers)
-
 	  }
 	})
 }
