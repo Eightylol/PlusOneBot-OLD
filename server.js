@@ -14,7 +14,7 @@ let db,
 
 const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
 
-const {A,B,Clear,L,S,Steam,U,W,I,G} = require(__dirname + '\\modules.js')
+const {A,googleSearch,Clear,L,S,Steam,U,W,I,G} = require(__dirname + '\\modules.js')
 
 if (!String.prototype.format) {
   String.prototype.format = function() {
@@ -81,6 +81,7 @@ const runCommand = (cmd,message) => {
 				Clear.get(message,commands, (err,result) => {
 					if (err != null) {
 						message.channel.sendMessage("",{embed: _embed.error("Clear",err.message)}).then(m => {
+							message.delete(5000)
 							m.delete(5000)
 						})
 						return
@@ -217,11 +218,25 @@ const runCommand = (cmd,message) => {
 			break
 
 			case "playing":
-				bot.user.setGame(cmd.replace("playing ",""))
+				if (!message.member.hasPermission('MANAGE_MESSAGES')) {
+					message.reply("",{embed: _embed.rich({
+						title: "DENIED",
+						description: "You do not have the required privileges to do this.",
+						thumbnail: bot.user.avatarUrl
+					})})
+					return
+				}
+				bot.user.setGame(cmd.replace("playing ","")).then(() => {
+					message.reply("",{embed: _embed.rich({
+						title: "Playing",
+						description: "Bot status set to " + cmd.replace("playing ","")
+					})})
+				})
+
 			break
 
 			case "ping":
-        message.channel.sendMessage("pong")
+        message.channel.sendMessage("",{embed: _embed.info("Ping","Pong")})
       break
 
 			case "uptime":
@@ -230,19 +245,70 @@ const runCommand = (cmd,message) => {
       break
 
       case "urban":
-        U.get(bot,message,cmd.replace("urban ",""))
+        U.get(cmd.replace("urban ",""), (err,_urbanMeaning) => {
+					if (err) {
+						message.channel.sendMessage("",{embed: _embed.error("Error",err.message)})
+						return
+					}
+					message.channel.sendMessage("**Urban Dictionary**",{embed: _embed.rich({
+						title: cmd.replace("urban ","").charAt(0).toUpperCase() + cmd.replace("urban ","").slice(1),
+						url: _urbanMeaning.url,
+						description: _urbanMeaning.content.replace(".",". "),
+						color: Settings.ui.colors.messages.info,
+						author: {
+							name: _urbanMeaning.author,
+							img: bot.user.avatarURL
+						}
+					})})
+				})
       break
 
       case "wiki":
-        W.get(bot,message,cmd.replace("wiki ",""))
+        W.get(bot,message,cmd.replace("wiki ",""), (err, _wikiMeaning) => {
+					if (err) {
+						message.channel.sendMessage("",{embed: _embed.error("Error",err)})
+						return
+					}
+					message.channel.sendMessage("**Wikipedia**",{embed: _embed.rich({
+						title: cmd.replace("wiki ","").charAt(0).toUpperCase() + cmd.replace("wiki ","").slice(1),
+						url: _wikiMeaning.url,
+						description: _wikiMeaning.description,
+						color: Settings.ui.colors.messages.info,
+						fields: [
+							{title: "Last edited on wiki", value: _wikiMeaning.last_edited}
+						]
+					})})
+				})
       break
 
 			case "google":
-        B.get(message,cmd.replace("google ",""))
+				message.channel.startTyping()
+        googleSearch.get(cmd.replace("google ",""), (err, _googleResult) => {
+					if (err) {
+						message.channel.sendMessage("",{embed: _embed.error("Error",err)})
+						message.channel.stopTyping()
+						return
+					}
+					message.channel.sendMessage("**Google** " + cmd.replace("google ",""), {embed: _embed.rich({
+						color: Settings.ui.colors.messages.info,
+						fields: _googleResult
+					})})
+					message.channel.stopTyping()
+				})
       break
 
 			case "imgur":
-        I.get(message,cmd.replace("imgur ",""))
+				message.channel.startTyping()
+        I.get(cmd.replace("imgur ",""), (err, _imgurResult) => {
+					if (err) {
+						console.log(err)
+						message.channel.sendMessage("",{embed: _embed.error("Error",err)})
+						message.channel.stopTyping()
+						return
+					}
+					message.channel.sendMessage("!imgur " + cmd.replace("imgur ",""), {embed: _embed.rich(_imgurResult)})
+					message.channel.stopTyping()
+				})
       break
 
       case "linkcheck":

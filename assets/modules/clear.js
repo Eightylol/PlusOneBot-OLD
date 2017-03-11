@@ -9,6 +9,8 @@ const ClearFunc = (message,commands,cb) => {
 				e = JSON.parse(e.response.text)
 				cb(e)
 			})
+		} else {
+			cb({message: "You need to delete at least 2 messages."})
 		}
 	}
 }

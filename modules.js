@@ -1,7 +1,7 @@
 let modulesPath = __dirname+ "/assets/modules/"
 module.exports = {
 	A: require(modulesPath + "avatar.js"),
-	B: require(modulesPath + "bing.js"),
+	googleSearch: require(modulesPath + "googleSearch.js"),
 	Clear: require(modulesPath + "clear.js"),
 	G: require(modulesPath + "gServer.js"),
 	I: require(modulesPath + "imgur.js"),
