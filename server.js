@@ -282,7 +282,6 @@ const runCommand = (cmd,message) => {
       break
 
 			case "google":
-				// bot.startTyping()*
 				message.channel.startTyping()
         googleSearch.get(cmd.replace("google ",""), (err, _googleResult) => {
 					if (err) {
@@ -299,7 +298,17 @@ const runCommand = (cmd,message) => {
       break
 
 			case "imgur":
-        I.get(message,cmd.replace("imgur ",""))
+				message.channel.startTyping()
+        I.get(cmd.replace("imgur ",""), (err, _imgurResult) => {
+					if (err) {
+						console.log(err)
+						message.channel.sendMessage("",{embed: _embed.error("Error",err)})
+						message.channel.stopTyping()
+						return
+					}
+					message.channel.sendMessage("!imgur " + cmd.replace("imgur ",""), {embed: _embed.rich(_imgurResult)})
+					message.channel.stopTyping()
+				})
       break
 
       case "linkcheck":
