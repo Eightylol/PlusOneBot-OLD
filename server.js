@@ -81,6 +81,7 @@ const runCommand = (cmd,message) => {
 				Clear.get(message,commands, (err,result) => {
 					if (err != null) {
 						message.channel.sendMessage("",{embed: _embed.error("Clear",err.message)}).then(m => {
+							message.delete(5000)
 							m.delete(5000)
 						})
 						return
@@ -217,11 +218,25 @@ const runCommand = (cmd,message) => {
 			break
 
 			case "playing":
-				bot.user.setGame(cmd.replace("playing ",""))
+				if (!message.member.hasPermission('MANAGE_MESSAGES')) {
+					message.reply("",{embed: _embed.rich({
+						title: "DENIED",
+						description: "You do not have the required privileges to do this.",
+						thumbnail: bot.user.avatarUrl
+					})})
+					return
+				}
+				bot.user.setGame(cmd.replace("playing ","")).then(() => {
+					message.reply("",{embed: _embed.rich({
+						title: "Playing",
+						description: "Bot status set to " + cmd.replace("playing ","")
+					})})
+				})
+
 			break
 
 			case "ping":
-        message.channel.sendMessage("pong")
+        message.channel.sendMessage("",{embed: _embed.info("Ping","Pong")})
       break
 
 			case "uptime":
@@ -230,7 +245,22 @@ const runCommand = (cmd,message) => {
       break
 
       case "urban":
-        U.get(bot,message,cmd.replace("urban ",""))
+        U.get(bot,message,cmd.replace("urban ",""), (err,_urbanMeaning) => {
+					if (err) {
+						message.channel.sendMessage("",{embed: _embed.error("Error",err.message)})
+						return
+					}
+					message.channel.sendMessage("**Urban Dictionary**",{embed: _embed.rich({
+						title: cmd.replace("urban ","").charAt(0).toUpperCase() + cmd.replace("urban ","").slice(1),
+						url: _urbanMeaning.url,
+						description: _urbanMeaning.content.replace(".",". "),
+						color: Settings.ui.colors.messages.info,
+						author: {
+							name: _urbanMeaning.author,
+							img: bot.user.avatarURL
+						}
+					})})
+				})
       break
 
       case "wiki":
