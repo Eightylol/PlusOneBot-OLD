@@ -264,7 +264,21 @@ const runCommand = (cmd,message) => {
       break
 
       case "wiki":
-        W.get(bot,message,cmd.replace("wiki ",""))
+        W.get(bot,message,cmd.replace("wiki ",""), (err, _wikiMeaning) => {
+					if (err) {
+						message.channel.sendMessage("",{embed: _embed.error("Error",err)})
+						return
+					}
+					message.channel.sendMessage("**Wikipedia**",{embed: _embed.rich({
+						title: cmd.replace("wiki ","").charAt(0).toUpperCase() + cmd.replace("wiki ","").slice(1),
+						url: _wikiMeaning.url,
+						description: _wikiMeaning.description,
+						color: Settings.ui.colors.messages.info,
+						fields: [
+							{title: "Last edited on wiki", value: _wikiMeaning.last_edited}
+						]
+					})})
+				})
       break
 
 			case "google":
