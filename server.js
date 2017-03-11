@@ -14,7 +14,7 @@ let db,
 
 const _embed = require(__dirname + "/assets/modules/messageEmbed.js")
 
-const {A,B,Clear,L,S,Steam,U,W,I,G} = require(__dirname + '\\modules.js')
+const {A,googleSearch,Clear,L,S,Steam,U,W,I,G} = require(__dirname + '\\modules.js')
 
 if (!String.prototype.format) {
   String.prototype.format = function() {
@@ -245,7 +245,7 @@ const runCommand = (cmd,message) => {
       break
 
       case "urban":
-        U.get(bot,message,cmd.replace("urban ",""), (err,_urbanMeaning) => {
+        U.get(cmd.replace("urban ",""), (err,_urbanMeaning) => {
 					if (err) {
 						message.channel.sendMessage("",{embed: _embed.error("Error",err.message)})
 						return
@@ -282,7 +282,20 @@ const runCommand = (cmd,message) => {
       break
 
 			case "google":
-        B.get(message,cmd.replace("google ",""))
+				// bot.startTyping()*
+				message.channel.startTyping()
+        googleSearch.get(cmd.replace("google ",""), (err, _googleResult) => {
+					if (err) {
+						message.channel.sendMessage("",{embed: _embed.error("Error",err)})
+						message.channel.stopTyping()
+						return
+					}
+					message.channel.sendMessage("**Google** " + cmd.replace("google ",""), {embed: _embed.rich({
+						color: Settings.ui.colors.messages.info,
+						fields: _googleResult
+					})})
+					message.channel.stopTyping()
+				})
       break
 
 			case "imgur":

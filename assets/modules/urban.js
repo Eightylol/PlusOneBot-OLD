@@ -1,8 +1,8 @@
 const urban = require('urban'),
-			cheerio =require('cheerio')
+			cheerio =require('cheerio'),
 			request = require('request')
 
-const urbanFunc = (bot,message,phrase,cb) => {
+const urbanFunc = (phrase,cb) => {
   let r = urban(phrase)
   r.first((json) => {
 		if (typeof json != "undefined") {

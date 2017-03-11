@@ -18,6 +18,13 @@ module.exports = {
 	steam: {
 		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
 	},
+	google: {
+		apikey: "AIzaSyBC7eWS3tQS4H9nQtntbrxwEkbAVhFkaQM",
+		cx: "007343989315666686152:zss4ryhcthw",
+		search: {
+			num_results: 3
+		}
+	},
 	commandSymbol: "!",
 	port:6543,
   validChannels : [
