@@ -184,12 +184,7 @@ const runCommand = (cmd,message) => {
 							thumbnail: bot.user.avatarURL,
 							fields: []
 						}
-						gServers.forEach(gServer => {
-							_em.fields.push({
-								title: gServer.title,
-								value: "IP: " + gServer.ip + " Port: " + gServer.port + "\n" + gServer.connect
-							})
-						})
+						console.log(gServer)
 						message.channel.sendMessage("", {
 							embed: _embed.rich(_em)
 						})

@@ -1,6 +1,7 @@
 const Settings = require(__dirname + "\\..\\..\\settings.js"),
 			SteamApi = require('steam-api'),
-			app = new SteamApi.App(Settings.steam.apikey)
+			app = new SteamApi.App(Settings.steam.apikey),
+			request = require('request')
 
 const gamedir = {
 	conanexiles: "Conan Exiles",
@@ -9,7 +10,7 @@ const gamedir = {
 	"7DTD": "7 Days to Die",
 	ark_survival_evolved: "ARK: Survival Evolved",
 	csgo: "Counter-Strike: Global Offensive",
-	rust: "Rust" 
+	rust: "Rust"
 }
 
 const gServerFunc = (ipAndPort,cb) => {
@@ -30,11 +31,19 @@ const gServerFunc = (ipAndPort,cb) => {
 					let _split = server.addr.split(":")
 					gServer.ip = _split[0]
 					gServer.port = _split[1]
-					gServer.connect = "steam://connect/" + gServer.ip + ":" + gServer.port
+
+					request.get("http://localhost?ip=" + gServer.ip + "&port=" + gServer.port, (err,httpResponse,body) => {
+						let b = JSON.parse(body)
+						gServer.host = b.HostName
+						console.log("Foo")
+						gServer.connect = "steam://connect/" + gServer.ip + ":" + gServer.port
+						gServers.push(gServer)
+					})
 				}
-				gServers.push(gServer)
 			})
-			cb(null,gServers)
+			setTimeout(() => {
+				cb(null,gServers)
+			},2000)
 	  }
 	})
 }
