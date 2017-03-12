@@ -187,7 +187,7 @@ const runCommand = (cmd,message) => {
 						gServers.forEach(gServer => {
 							_em.fields.push({
 								title: gServer.title,
-								value: "IP: " + gServer.ip + " Port: " + gServer.port
+								value: "IP: " + gServer.ip + " Port: " + gServer.port + "\n" + gServer.connect
 							})
 						})
 						message.channel.sendMessage("", {

@@ -4,7 +4,12 @@ const Settings = require(__dirname + "\\..\\..\\settings.js"),
 
 const gamedir = {
 	conanexiles: "Conan Exiles",
-	cstrike: "Counter-Strike: Source"
+	cstrike: "Counter-Strike: Source",
+	Arma3: "Arma 3",
+	"7DTD": "7 Days to Die",
+	ark_survival_evolved: "ARK: Survival Evolved",
+	csgo: "Counter-Strike: Global Offensive",
+	rust: "Rust" 
 }
 
 const gServerFunc = (ipAndPort,cb) => {
@@ -25,6 +30,7 @@ const gServerFunc = (ipAndPort,cb) => {
 					let _split = server.addr.split(":")
 					gServer.ip = _split[0]
 					gServer.port = _split[1]
+					gServer.connect = "steam://connect/" + gServer.ip + ":" + gServer.port
 				}
 				gServers.push(gServer)
 			})
