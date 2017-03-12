@@ -160,7 +160,9 @@ const runCommand = (cmd,message) => {
 			break
 
 			case "server":
-				G.get(commands[1], (err,gServers) => {
+				G.get(commands[1], (err,_s) => {
+					let ip = commands[1].split(":")[0],
+							port = commands[1].split(":")[1]
 					if (err) {
 						if (err == "empty") {
 							message.channel.sendMessage("", {
@@ -173,22 +175,24 @@ const runCommand = (cmd,message) => {
 									]
 								})
 							})
+						} else {
+							console.log(err)
 						}
 						return
 					}
-					if (gServers && gServers.length > 0) {
-						let _em = {
-							title: "Servers on " + commands[1],
-							description: "Beneath is a list of servers associated to " + commands[1],
-							color:Settings.ui.colors.messages.info,
-							thumbnail: bot.user.avatarURL,
-							fields: []
-						}
-						console.log(gServer)
-						message.channel.sendMessage("", {
-							embed: _embed.rich(_em)
+					message.channel.sendMessage("",{
+						embed: _embed.rich({
+							title: _s.info.HostName,
+							color: Settings.ui.colors.messages.warning,
+							// thumbnail: bot.user.avatarURL,
+							img: _s.rules.headerimage,
+							fields: [
+								{title: "Map", value: _s.info.Map, inline:true},
+								{title: "Players", value: _s.info.Players + "/" + _s.info.MaxPlayers, inline:true},
+								{title: "Connect", value: "steam://connect/" + ip + ":" + port, inline: true}
+							]
 						})
-					}
+					})
 				})
 			break
 
