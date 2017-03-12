@@ -175,24 +175,30 @@ const runCommand = (cmd,message) => {
 									]
 								})
 							})
-						} else {
-							console.log(err)
 						}
 						return
 					}
-					message.channel.sendMessage("",{
-						embed: _embed.rich({
-							title: _s.info.HostName,
-							color: Settings.ui.colors.messages.warning,
-							// thumbnail: bot.user.avatarURL,
-							img: _s.rules.headerimage,
-							fields: [
-								{title: "Map", value: _s.info.Map, inline:true},
-								{title: "Players", value: _s.info.Players + "/" + _s.info.MaxPlayers, inline:true},
-								{title: "Connect", value: "steam://connect/" + ip + ":" + port, inline: true}
-							]
+					if (_s.hasOwnProperty("info")) {
+						message.channel.sendMessage("",{
+							embed: _embed.rich({
+								title: _s.info.HostName,
+								color: Settings.ui.colors.messages.warning,
+								// thumbnail: bot.user.avatarURL,
+								img: _s.rules.headerimage,
+								fields: [
+									{title: "Map", value: _s.info.Map, inline:true},
+									{title: "Players", value: _s.info.Players + "/" + _s.info.MaxPlayers, inline:true},
+									{title: "Connect", value: "steam://connect/" + ip + ":" + port, inline: true}
+								]
+							})
 						})
-					})
+					} else {
+						if (typeof _s == "string") {
+							if (_s.indexOf("Unexpected token") != -1) {
+								// PHP version not working
+							}
+						}
+					}
 				})
 			break
 

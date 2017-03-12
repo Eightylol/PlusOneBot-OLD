@@ -19,7 +19,15 @@ const gServerFunc = (ipAndPort,cb) => {
 			port = ipAndPort.split(":")[1],
 			_url = "http://localhost?ip=" + ip + "&port=" + port
 	request.get(_url, (e,r,bo) => {
-		cb(null,JSON.parse(bo))
+		let j = {}
+		try {
+			j = JSON.parse(bo)
+		} catch (e) {
+			cb(null,e.message)
+			return
+		} finally {
+			cb(null,j)
+		}
 		return
 	})
 }
