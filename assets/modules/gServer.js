@@ -16,19 +16,21 @@ const gamedir = {
 const gServerFunc = (ipAndPort,cb) => {
 	if (typeof ipAndPort == "undefined") return cb("empty")
 	let ip = ipAndPort.split(":")[0],
-			port = ipAndPort.split(":")[1],
-			_url = "http://localhost?ip=" + ip + "&port=" + port
+			port = ipAndPort.split(":")[1]
+	let	_url = "http://localhost?ip=" + ip + "&port=" + port
 	request.get(_url, (e,r,bo) => {
 		let j = {}
 		try {
 			j = JSON.parse(bo)
+			cb(null,j)
 		} catch (e) {
+			if (e.message.indexOf("Unexpected token") != -1) {
+				cb(null,_url)
+				return
+			}
 			cb(null,e.message)
 			return
-		} finally {
-			cb(null,j)
 		}
-		return
 	})
 }
 module.exports = {
