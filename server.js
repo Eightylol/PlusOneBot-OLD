@@ -160,13 +160,12 @@ const runCommand = (cmd,message) => {
 			break
 
 			case "server":
-				G.get(commands[1], (err,gServers) => {
+				G.get(commands[1], (err,_s) => {
 					if (err) {
 						if (err == "empty") {
 							message.channel.sendMessage("", {
 								embed: _embed.rich({
 									color: Settings.ui.colors.messages.warning,
-									thumbnail: bot.user.avatarURL,
 									fields: [
 										{title: "Usage", value: "`!server <ip|hostname>[:port]`"},
 										{title: "Examples", value: "`!server 93.190.140.106:27015`"}
@@ -176,23 +175,29 @@ const runCommand = (cmd,message) => {
 						}
 						return
 					}
-					if (gServers && gServers.length > 0) {
-						let _em = {
-							title: "Servers on " + commands[1],
-							description: "Beneath is a list of servers associated to " + commands[1],
-							color:Settings.ui.colors.messages.info,
-							thumbnail: bot.user.avatarURL,
-							fields: []
-						}
-						gServers.forEach(gServer => {
-							_em.fields.push({
-								title: gServer.title,
-								value: "IP: " + gServer.ip + " Port: " + gServer.port + "\n" + gServer.connect
+					let ip = commands[1].split(":")[0],
+							port = commands[1].split(":")[1]
+					if (_s.hasOwnProperty("info") && _s.info) {
+						message.channel.sendMessage("",{
+							embed: _embed.rich({
+								title: _s.info.HostName + " Server",
+								description: "steam://connect/" + ip + ":" + port,
+								color: Settings.ui.colors.messages.info,
+								author: {
+									name: _s.info.ModDesc,
+									img: "https://images-ext-2.discordapp.net/eyJ1cmwiOiJodHRwczovL2kuaW1ndXIuY29tLzhvVXBqZWIucG5nIn0.JjTRS_hfiqexiUVAfzVDHbDXdIs"
+								},
+								// thumbnail: bot.user.avatarURL,
+								img: _s.rules.headerimage,
+								fields: [
+									{title: "Map", value: _s.info.Map, inline:true},
+									{title: "Players", value: _s.info.Players + "/" + _s.info.MaxPlayers, inline:true},
+									{title: "Password", value: _s.info.Password ? "Protected" : "Open", inline:true}
+								]
 							})
 						})
-						message.channel.sendMessage("", {
-							embed: _embed.rich(_em)
-						})
+					} else {
+						console.log(_s)
 					}
 				})
 			break
