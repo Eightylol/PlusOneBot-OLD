@@ -4,7 +4,7 @@ module.exports = {
 		playing:"Alpha",
 		musicChannel: "Music",
 		avatar: "botAvatar.png",
-		token: "Mjg1ODQwNTUxMjA5NzMwMDQ4.C5Y_4g.WIAypaHYR1_pICF9I7keIUzamtI"
+		token: "[TOKEN]"
 	},
 	ui : {
 		colors: {
@@ -16,10 +16,10 @@ module.exports = {
 		}
 	},
 	steam: {
-		apikey: '729B074D90A891022A35C2C45D9CA03B' // INSERT API KEY HERE
+		apikey: '[APIKEY]' // INSERT API KEY HERE
 	},
 	google: {
-		apikey: "AIzaSyBC7eWS3tQS4H9nQtntbrxwEkbAVhFkaQM",
+		apikey: "[APIKEY]",
 		cx: "007343989315666686152:zss4ryhcthw",
 		search: {
 			num_results: 3
