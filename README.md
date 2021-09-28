@@ -1,3 +1,5 @@
+# I AM OLD AN OUTDATED AN I WILL PROBABLY NEVER BE UPDATED
+
 # PlusOneBot ![PlusOneLogo][logo]
 [logo]: http://i.imgur.com/78OPDVY.png "PlusOne"
 
